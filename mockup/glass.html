@@ -182,7 +182,7 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
 .cards { display: flex; flex-wrap: wrap; gap: 1.2rem 1rem; align-items: flex-start; }
 figure { margin: 0; display: grid; gap: .4rem; width: var(--card-w, 211px); max-width: 100%; }
 figcaption { font-size: .75rem; color: var(--helder-color-text-muted); overflow-wrap: anywhere; }
-figcaption b { font-weight: 600; }
+figcaption b { font-weight: 400; }
 
 /* ---------- Kaart ---------- */
 .card {
@@ -207,9 +207,9 @@ figcaption b { font-weight: 600; }
 .icon svg { width: 1.35rem; height: 1.35rem; }
 .card.active .icon { background: color-mix(in srgb, var(--state) 18%, transparent); color: var(--state); }
 .text { grid-area: text; min-width: 0; }
-.name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.name { font-weight: 400; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sub  { font-size: .857rem; color: var(--helder-color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.value { grid-area: value; font-size: 1.15rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.value { grid-area: value; font-size: 1.15rem; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .unit { font-size: .8rem; font-weight: 400; color: var(--helder-color-text-muted); margin-left: .1rem; }
 @container (max-width: 190px) {
   .head { grid-template-columns: auto 1fr; grid-template-areas: "icon value" "text text"; }
@@ -242,7 +242,7 @@ figcaption b { font-weight: 600; }
 .btn {
   flex: 1 1 0; min-width: 0; height: 2.4rem; border: 0; border-radius: var(--helder-radius-control);
   background: var(--helder-control-bg); color: var(--helder-color-text); cursor: pointer;
-  display: grid; place-items: center; font: inherit; font-weight: 600;
+  display: grid; place-items: center; font: inherit; font-weight: 400;
 }
 .btn svg { width: 1.2rem; height: 1.2rem; }
 .btn:hover:not(:disabled) { background: var(--helder-control-bg-hover); }
@@ -251,7 +251,7 @@ figcaption b { font-weight: 600; }
 .chips { display: flex; flex-wrap: wrap; gap: .35rem; }
 .chip {
   flex: 1 1 auto; border: 0; border-radius: var(--helder-radius-control); padding: .4rem .6rem;
-  font: inherit; font-size: .857rem; font-weight: 600; white-space: nowrap;
+  font: inherit; font-size: .857rem; font-weight: 400; white-space: nowrap;
   background: var(--helder-control-bg); color: var(--helder-color-text); cursor: pointer;
 }
 .chip[aria-pressed="true"] { background: var(--helder-color-accent); color: var(--helder-color-on-accent); }
@@ -279,7 +279,7 @@ figcaption b { font-weight: 600; }
 .meta { font-size: .857rem; color: var(--helder-color-text-muted); font-variant-numeric: tabular-nums; }
 .target { display: grid; grid-template-columns: 2.4rem 1fr 2.4rem; align-items: center; gap: .4rem; }
 .target .btn { flex: none; width: 2.4rem; }
-.target .tv { text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.target .tv { text-align: center; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .target .tv small { display: block; font-size: .75rem; font-weight: 400; color: var(--helder-color-text-muted); }
 
 /* onbeschikbaar: alleen kleuren veranderen */

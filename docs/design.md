@@ -95,4 +95,5 @@ deploy/deploy.sh uitrol naar HA
 | 2026-11-15 | Klimaatkaart: presets (label + temperatuur) instelbaar in de visuele editor |
 | 2026-11-15 | Lichtkaart: aan/uit met helderheidsslider |
 | 2026-11-15 | Claude mag de hele HA-installatie lezen (alleen lezen; wijzigen blijft na toestemming) |
+| 2026-11-15 | Geen vetgedrukte tekst in kaarten: alle kaarttekst normaal gewicht (400), grote readouts licht (300) |
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |
