@@ -152,15 +152,7 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
   --helder-color-light: #ffc23d;
   --helder-color-heat: #ff8a3d;
 }
-/* accentkandidaten, per modus */
-[data-accent="blue"]   .stage[data-mode="light"] { --helder-color-accent: #2563eb; }
-[data-accent="blue"]   .stage[data-mode="dark"]  { --helder-color-accent: #5b8cff; }
-[data-accent="teal"]   .stage[data-mode="light"] { --helder-color-accent: #0d8a8a; }
-[data-accent="teal"]   .stage[data-mode="dark"]  { --helder-color-accent: #2cc4c0; }
-[data-accent="indigo"] .stage[data-mode="light"] { --helder-color-accent: #4f46e5; }
-[data-accent="indigo"] .stage[data-mode="dark"]  { --helder-color-accent: #8f88ff; }
-[data-accent="orange"] .stage[data-mode="light"] { --helder-color-accent: #ff6d00; }
-[data-accent="orange"] .stage[data-mode="dark"]  { --helder-color-accent: #ff7a1a; }
+/* accentkleur: per modus gezet vanuit het paneel (zie ACCENTS in het script) */
 /* tijdelijk: achtergrondverlopen volgen de accentkleur */
 [data-bg="accent"] .stage[data-mode="light"] {
   --helder-bg-blob-1: color-mix(in srgb, var(--helder-color-accent) 38%, transparent);
@@ -316,14 +308,11 @@ figcaption b { font-weight: 400; }
   </header>
 
   <section class="panel" aria-label="Instellingen">
-    <div class="ctl">
+    <div class="ctl" style="grid-column: 1 / -1">
       <span class="lbl">Accentkleur</span>
-      <div class="seg" data-set="accent">
-        <button data-v="blue"><i class="sw" style="background:#2563eb"></i>Blauw</button>
-        <button data-v="teal"><i class="sw" style="background:#0d8a8a"></i>Groenblauw</button>
-        <button data-v="indigo"><i class="sw" style="background:#4f46e5"></i>Indigo</button>
-        <button data-v="orange"><i class="sw" style="background:#ff6d00"></i>Oranje #ff6d00</button>
-      </div>
+      <div class="seg" data-set="accent" data-group="color"></div>
+      <span class="lbl">Grijs</span>
+      <div class="seg" data-set="accent" data-group="grey"></div>
     </div>
     <div class="ctl">
       <span class="lbl">Kleurgebruik (optie in de editor)</span>
@@ -516,6 +505,41 @@ figcaption b { font-weight: 400; }
     });
   });
 
+  // Accentkleuren: [id, naam, licht, donker, groep]
+  const ACCENTS = [
+    ['orange', 'Oranje #ff6d00', '#ff6d00', '#ff7a1a', 'color'],
+    ['blue', 'Blauw', '#2563eb', '#5b8cff', 'color'],
+    ['teal', 'Groenblauw', '#0d8a8a', '#2cc4c0', 'color'],
+    ['indigo', 'Indigo', '#4f46e5', '#8f88ff', 'color'],
+    ['red', 'Rood', '#dc2626', '#f87171', 'color'],
+    ['coral', 'Koraal', '#e8474f', '#ff7a7f', 'color'],
+    ['raspberry', 'Framboos', '#db2777', '#f472b6', 'color'],
+    ['pink', 'Roze', '#d6517f', '#f59ab8', 'color'],
+    ['purple', 'Paars', '#9333ea', '#c084fc', 'color'],
+    ['violet', 'Violet', '#7c3aed', '#a78bfa', 'color'],
+    ['sky', 'Hemelsblauw', '#0284c7', '#38bdf8', 'color'],
+    ['cyan', 'Cyaan', '#0891b2', '#22d3ee', 'color'],
+    ['petrol', 'Petrol', '#0f6e7a', '#3fb0bd', 'color'],
+    ['emerald', 'Smaragd', '#059669', '#34d399', 'color'],
+    ['green', 'Groen', '#16a34a', '#4ade80', 'color'],
+    ['lime', 'Limoen', '#65a30d', '#a3e635', 'color'],
+    ['olive', 'Olijf', '#6b7f1a', '#a3b84a', 'color'],
+    ['mustard', 'Mosterd', '#b98a05', '#facc15', 'color'],
+    ['amber', 'Amber', '#d97706', '#fbbf24', 'color'],
+    ['terracotta', 'Terracotta', '#c2410c', '#f0835a', 'color'],
+    ['cognac', 'Cognac', '#9a5b2e', '#d0905a', 'color'],
+    ['graphite', 'Grafiet', '#3f3f46', '#d4d4d8', 'grey'],
+    ['anthracite', 'Antraciet', '#27272a', '#e4e4e7', 'grey'],
+    ['slate', 'Leisteen', '#475569', '#a8b6c9', 'grey'],
+    ['warmgrey', 'Warm grijs', '#78716c', '#c4bcb4', 'grey'],
+    ['silver', 'Zilver', '#7d838c', '#c9ced6', 'grey']
+  ];
+  const lum = hex => { const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+  const onAccent = hex => lum(hex) > .4 ? '#1c1814' : '#ffffff';
+  document.querySelectorAll('[data-set="accent"]').forEach(g => {
+    g.innerHTML = ACCENTS.filter(a => a[4] === g.dataset.group).map(([id, n, l]) => `<button data-v="${id}"><i class="sw" style="background:${l}"></i>${n}</button>`).join('');
+  });
+
   // ---------- Bedieningspaneel ----------
   const glassPresets = { subtle: [12, 55], medium: [20, 40], strong: [32, 25] };
   const radii = [6, 10, 14, 18, 22, 28];
@@ -530,6 +554,10 @@ figcaption b { font-weight: 400; }
     stages.forEach(s => {
       s.el.style.setProperty('--glass-blur', st.blur + 'px');
       s.el.style.setProperty('--glass-alpha', st.fill / 100);
+      const ac = ACCENTS.find(a => a[0] === st.accent) || ACCENTS[0];
+      const hex = s.el.dataset.mode === 'dark' ? ac[3] : ac[2];
+      s.el.style.setProperty('--helder-color-accent', hex);
+      s.el.style.setProperty('--helder-color-on-accent', onAccent(hex));
       s.el.style.setProperty('--r', st.radius + 'px');
       s.el.style.setProperty('--gloss', st.gloss);
       s.el.style.setProperty('--card-w', st.width + 'px');
