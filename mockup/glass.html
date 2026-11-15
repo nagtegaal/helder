@@ -189,10 +189,13 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
   --helder-radius-card: var(--r);
   --helder-radius-control: calc(var(--r) * .5 + 2px);
   --helder-space: 1rem;
+  --gloss: .45;
 }
-[data-depth="border"] .stage { --helder-card-shadow: inset 0 1px 0 var(--helder-glass-highlight); --helder-card-border: var(--helder-glass-border); }
+.stage[data-mode="light"] { --helder-gloss: var(--gloss); --helder-gloss-edge: rgba(255, 255, 255, calc(var(--gloss) * 1.6)); }
+.stage[data-mode="dark"]  { --helder-gloss: calc(var(--gloss) * .28); --helder-gloss-edge: rgba(255, 255, 255, calc(var(--gloss) * .45)); }
+[data-depth="border"] .stage { --helder-card-shadow: inset 0 1px 0 var(--helder-glass-highlight), inset 1px 0 0 var(--helder-gloss-edge); --helder-card-border: var(--helder-glass-border); }
 [data-depth="shadow"] .stage { --helder-card-shadow: var(--helder-shadow-card); --helder-card-border: transparent; }
-[data-depth="both"]   .stage { --helder-card-shadow: inset 0 1px 0 var(--helder-glass-highlight), var(--helder-shadow-card); --helder-card-border: var(--helder-glass-border); }
+[data-depth="both"]   .stage { --helder-card-shadow: inset 0 1px 0 var(--helder-glass-highlight), inset 1px 0 0 var(--helder-gloss-edge), var(--helder-shadow-card); --helder-card-border: var(--helder-glass-border); }
 
 .cards { display: flex; flex-wrap: wrap; gap: 1.2rem 1rem; align-items: flex-start; }
 figure { margin: 0; display: grid; gap: .4rem; width: var(--card-w, 211px); max-width: 100%; }
@@ -202,7 +205,10 @@ figcaption b { font-weight: 400; }
 /* ---------- Kaart ---------- */
 .card {
   container-type: inline-size;
-  background: var(--helder-glass-fill);
+  /* glans: diagonale lichtval bovenaan + glasvulling */
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, var(--helder-gloss)) 0%, rgba(255, 255, 255, calc(var(--helder-gloss) * .25)) 30%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(var(--helder-glass-fill), var(--helder-glass-fill));
   -webkit-backdrop-filter: blur(var(--helder-glass-blur)) saturate(170%);
   backdrop-filter: blur(var(--helder-glass-blur)) saturate(170%);
   border: 1px solid var(--helder-card-border);
@@ -342,6 +348,14 @@ figcaption b { font-weight: 400; }
       </div>
       <label class="rngrow" for="blur">Blur <input class="rng" id="blur" type="range" min="0" max="48" step="1"><output id="blurOut"></output></label>
       <label class="rngrow" for="fill">Vulling <input class="rng" id="fill" type="range" min="5" max="85" step="1"><output id="fillOut"></output></label>
+    </div>
+    <div class="ctl">
+      <span class="lbl">Glans</span>
+      <div class="seg" data-set="gloss">
+        <button data-v="0">Uit</button>
+        <button data-v="0.45">Zacht</button>
+        <button data-v="0.75">Sterk</button>
+      </div>
     </div>
     <div class="ctl">
       <span class="lbl">Radius kaart (van strak tot rond)</span>
@@ -505,7 +519,7 @@ figcaption b { font-weight: 400; }
   // ---------- Bedieningspaneel ----------
   const glassPresets = { subtle: [12, 55], medium: [20, 40], strong: [32, 25] };
   const radii = [6, 10, 14, 18, 22, 28];
-  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211, bg: 'accent' };
+  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211, bg: 'accent', gloss: 0.45 };
   try { Object.assign(st, JSON.parse(localStorage.getItem('helder-mockup') || '{}')); } catch (_) {}
 
   document.querySelector('[data-set="radius"]').innerHTML = radii.map(r => `<button data-v="${r}" style="--r:${r}px">${r} px</button>`).join('');
@@ -517,6 +531,7 @@ figcaption b { font-weight: 400; }
       s.el.style.setProperty('--glass-blur', st.blur + 'px');
       s.el.style.setProperty('--glass-alpha', st.fill / 100);
       s.el.style.setProperty('--r', st.radius + 'px');
+      s.el.style.setProperty('--gloss', st.gloss);
       s.el.style.setProperty('--card-w', st.width + 'px');
     });
     blur.value = st.blur; fill.value = st.fill;
@@ -531,7 +546,7 @@ figcaption b { font-weight: 400; }
   document.querySelectorAll('[data-set]').forEach(g => g.addEventListener('click', ev => {
     const b = ev.target.closest('button'); if (!b) return;
     const k = g.dataset.set, v = b.dataset.v;
-    st[k] = (k === 'radius' || k === 'width') ? +v : v;
+    st[k] = (k === 'radius' || k === 'width' || k === 'gloss') ? +v : v;
     if (k === 'glass') [st.blur, st.fill] = glassPresets[v];
     apply();
   }));
