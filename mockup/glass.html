@@ -187,9 +187,10 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
 }
 .stage[data-mode="light"] { --helder-gloss: var(--gloss); --helder-gloss-edge: rgba(255, 255, 255, calc(var(--gloss) * 1.6)); }
 .stage[data-mode="dark"]  { --helder-gloss: calc(var(--gloss) * .28); --helder-gloss-edge: rgba(255, 255, 255, calc(var(--gloss) * .45)); }
-[data-depth="border"] .stage { --helder-card-shadow: inset 0 1px 0 var(--helder-glass-highlight), inset 1px 0 0 var(--helder-gloss-edge); --helder-card-border: var(--helder-glass-border); }
-[data-depth="shadow"] .stage { --helder-card-shadow: var(--helder-shadow-card); --helder-card-border: transparent; }
-[data-depth="both"]   .stage { --helder-card-shadow: inset 0 1px 0 var(--helder-glass-highlight), inset 1px 0 0 var(--helder-gloss-edge), var(--helder-shadow-card); --helder-card-border: var(--helder-glass-border); }
+[data-depth="border"] .stage { --helder-card-inset: inset 0 1px 0 var(--helder-glass-highlight), inset 1px 0 0 var(--helder-gloss-edge); --helder-card-drop: 0 0 0 transparent; --helder-card-border: var(--helder-glass-border); }
+[data-depth="shadow"] .stage { --helder-card-inset: inset 0 0 0 transparent; --helder-card-drop: var(--helder-shadow-card); --helder-card-border: transparent; }
+[data-depth="both"]   .stage { --helder-card-inset: inset 0 1px 0 var(--helder-glass-highlight), inset 1px 0 0 var(--helder-gloss-edge); --helder-card-drop: var(--helder-shadow-card); --helder-card-border: var(--helder-glass-border); }
+.stage { --helder-card-shadow: var(--helder-card-inset), var(--helder-card-drop); }
 
 .cards { display: flex; flex-wrap: wrap; gap: 1.2rem 1rem; align-items: flex-start; }
 figure { margin: 0; display: grid; gap: .4rem; width: var(--card-w, 211px); max-width: 100%; }
@@ -299,19 +300,17 @@ figcaption b { font-weight: 400; }
 .target .tv small { display: block; font-size: .75rem; font-weight: 400; color: var(--helder-color-text-muted); }
 
 /* swipe-kaart: slides naast elkaar met snap, stipjes eronder */
-.swipe { display: grid; gap: .5rem; min-width: 0; --bleed-x: 2.2rem; --bleed-top: 1.2rem; --bleed-bottom: 3rem; }
-/* De schuifcontainer knipt alles buiten zijn rand af. Daarom krijgt hij rondom ruimte voor de schaduw
-   (padding) en schuift hij met negatieve marges terug, zodat de kaart op dezelfde plek blijft staan.
-   De tussenruimte is ruim twee keer die rand, zodat de volgende slide niet in beeld piekt. */
+.swipe { display: grid; gap: .5rem; min-width: 0; }
+/* De swipe-kaart is een venster: de slides schuiven erin en eruit en worden op de kaartrand afgeknipt,
+   met dezelfde afgeronde hoeken. De slagschaduw zit op het venster zelf (een box-shadow valt buiten de
+   eigen overflow en wordt dus niet geknipt) en staat stil; de slides houden alleen hun binnenrand. */
 .track {
-  display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: calc(var(--bleed-x) * 2.2);
+  display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: var(--helder-space);
   overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain;
-  padding: var(--bleed-top) var(--bleed-x) var(--bleed-bottom);
-  margin: calc(var(--bleed-top) * -1) calc(var(--bleed-x) * -1) calc(var(--bleed-bottom) * -1);
-  scroll-padding-inline: var(--bleed-x);
-  pointer-events: none;
+  border-radius: var(--helder-radius-card);
+  box-shadow: var(--helder-card-drop);
 }
-.slide { pointer-events: auto; }
+.track .card { box-shadow: var(--helder-card-inset); }
 .track::-webkit-scrollbar { display: none; }
 .slide { scroll-snap-align: start; min-width: 0; }
 .dots { display: flex; justify-content: center; gap: .4rem; position: relative; z-index: 1; }
