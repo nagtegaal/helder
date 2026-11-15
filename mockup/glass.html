@@ -161,6 +161,21 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
 [data-accent="indigo"] .stage[data-mode="dark"]  { --helder-color-accent: #8f88ff; }
 [data-accent="orange"] .stage[data-mode="light"] { --helder-color-accent: #ff6d00; }
 [data-accent="orange"] .stage[data-mode="dark"]  { --helder-color-accent: #ff7a1a; }
+/* tijdelijk: achtergrondverlopen volgen de accentkleur */
+[data-bg="accent"] .stage[data-mode="light"] {
+  --helder-bg-blob-1: color-mix(in srgb, var(--helder-color-accent) 38%, transparent);
+  --helder-bg-blob-2: color-mix(in srgb, var(--helder-color-accent) 26%, transparent);
+  --helder-bg-blob-3: color-mix(in srgb, var(--helder-color-accent) 32%, transparent);
+  --helder-bg-blob-4: color-mix(in srgb, var(--helder-color-accent) 20%, transparent);
+  --helder-bg-blob-5: color-mix(in srgb, var(--helder-color-accent) 16%, transparent);
+}
+[data-bg="accent"] .stage[data-mode="dark"] {
+  --helder-bg-blob-1: color-mix(in srgb, var(--helder-color-accent) 26%, transparent);
+  --helder-bg-blob-2: color-mix(in srgb, var(--helder-color-accent) 18%, transparent);
+  --helder-bg-blob-3: color-mix(in srgb, var(--helder-color-accent) 22%, transparent);
+  --helder-bg-blob-4: color-mix(in srgb, var(--helder-color-accent) 15%, transparent);
+  --helder-bg-blob-5: color-mix(in srgb, var(--helder-color-accent) 10%, transparent);
+}
 .stage { --helder-color-on-accent: #ffffff; }
 
 /* kleurgebruik: één accent of statuskleuren per domein */
@@ -288,7 +303,7 @@ figcaption b { font-weight: 400; }
 @media (prefers-reduced-motion: reduce) { .switch::after { transition: none; } }
 </style>
 
-<div class="wrap" id="app" data-accent="orange" data-colors="domain" data-depth="both">
+<div class="wrap" id="app" data-accent="orange" data-colors="domain" data-depth="both" data-bg="accent">
   <header>
     <h1>Helder glas-mockup</h1>
     <p>Rolluik-, klimaat- en lichtkaart in licht en donker, met echte namen en standen uit Home Assistant. Kies hieronder accent, glas, radius en diepte; de kaarten zijn ook bedienbaar.</p>
@@ -309,6 +324,13 @@ figcaption b { font-weight: 400; }
       <div class="seg" data-set="colors">
         <button data-v="accent">Eén accent</button>
         <button data-v="domain">Statuskleur per domein</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span class="lbl">Achtergrondverlopen (tijdelijk)</span>
+      <div class="seg" data-set="bg">
+        <button data-v="accent">Volgen accent</button>
+        <button data-v="warm">Warm, vast</button>
       </div>
     </div>
     <div class="ctl">
@@ -483,14 +505,14 @@ figcaption b { font-weight: 400; }
   // ---------- Bedieningspaneel ----------
   const glassPresets = { subtle: [12, 55], medium: [20, 40], strong: [32, 25] };
   const radii = [6, 10, 14, 18, 22, 28];
-  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211 };
+  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211, bg: 'accent' };
   try { Object.assign(st, JSON.parse(localStorage.getItem('helder-mockup') || '{}')); } catch (_) {}
 
   document.querySelector('[data-set="radius"]').innerHTML = radii.map(r => `<button data-v="${r}" style="--r:${r}px">${r} px</button>`).join('');
   const blur = document.getElementById('blur'), fill = document.getElementById('fill');
 
   function apply() {
-    app.dataset.accent = st.accent; app.dataset.colors = st.colors; app.dataset.depth = st.depth;
+    app.dataset.accent = st.accent; app.dataset.colors = st.colors; app.dataset.depth = st.depth; app.dataset.bg = st.bg;
     stages.forEach(s => {
       s.el.style.setProperty('--glass-blur', st.blur + 'px');
       s.el.style.setProperty('--glass-alpha', st.fill / 100);
