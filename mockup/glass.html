@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--ARTIFACT-START-->
+<title>Helder glas-mockup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap">
+<style>
+/* Mockup voor het fundament van Helder (gesprek 0).
+   Layout: bedieningspaneel bovenaan, daaronder twee podia (licht en donker) met elk de kaarten op de gekozen breedte.
+   Alle kaartstijlen lopen via --helder-* tokens; de podia zetten die tokens per modus. 1rem = 14px. */
+
+html { font-size: 14px; }
+
+/* ---------- Pagina (bedieningspaneel), volgt het thema van de kijker ---------- */
+:root {
+  --page-bg: #f4f1ee;
+  --page-fg: #24201c;
+  --page-muted: #6f675f;
+  --page-line: #ddd5cc;
+  --page-panel: #fbf9f7;
+  --page-sel: #24201c;
+  --page-on-sel: #fbf9f7;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page-bg: #121010; --page-fg: #eee8e2; --page-muted: #a69d94; --page-line: #2f2a26;
+    --page-panel: #1a1716; --page-sel: #eee8e2; --page-on-sel: #1a1716; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page-bg: #121010; --page-fg: #eee8e2; --page-muted: #a69d94; --page-line: #2f2a26;
+  --page-panel: #1a1716; --page-sel: #eee8e2; --page-on-sel: #1a1716; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--page-fg);
+  font-family: "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.wrap {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 1.5rem 3rem;
+  max-width: 90rem;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.5rem;
+}
+header h1 { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
+
+.panel {
+  background: var(--page-panel);
+  border: 1px solid var(--page-line);
+  border-radius: 12px;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1rem 1.5rem;
+}
+.ctl { display: grid; gap: .4rem; min-width: 0; align-content: start; }
+.ctl > .lbl { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--page-muted); }
+.seg { display: flex; flex-wrap: wrap; gap: .3rem; }
+.seg button {
+  font: inherit; font-size: .9rem; padding: .35rem .7rem; border-radius: 999px;
+  border: 1px solid var(--page-line); background: transparent; color: var(--page-fg); cursor: pointer;
+  display: inline-flex; align-items: center; gap: .4rem;
+}
+.seg button[aria-pressed="true"] { background: var(--page-sel); color: var(--page-on-sel); border-color: var(--page-sel); }
+.seg button:focus-visible, .rng:focus-visible { outline: 2px solid var(--page-fg); outline-offset: 2px; }
+.sw { width: .9rem; height: .9rem; border-radius: 50%; display: inline-block; border: 1px solid rgba(127,127,127,.4); }
+.rngrow { display: grid; grid-template-columns: 4.5rem 1fr 3.5rem; align-items: center; gap: .5rem; font-size: .9rem; }
+.rngrow output { text-align: right; font-variant-numeric: tabular-nums; color: var(--page-muted); }
+.rng { width: 100%; accent-color: var(--page-fg); }
+.radii { display: flex; flex-wrap: wrap; gap: .4rem; }
+.radii button {
+  font: inherit; font-size: .8rem; width: 3.6rem; height: 3rem; cursor: pointer;
+  border: 1px solid var(--page-line); background: transparent; color: var(--page-fg);
+  display: grid; place-items: center;
+  border-radius: var(--r);
+}
+.radii button[aria-pressed="true"] { background: var(--page-sel); color: var(--page-on-sel); border-color: var(--page-sel); }
+
+.stage-title { display: flex; align-items: baseline; gap: .6rem; margin: 0 0 .8rem; font-size: 1.1rem; font-weight: 700; }
+.stage-title span { font-weight: 400; font-size: .9rem; color: var(--helder-color-text-muted); }
+
+/* ---------- Helder-tokens per modus ---------- */
+.stage {
+  /* waarden die het paneel zet */
+  --glass-alpha: .40;
+  --glass-blur: 20px;
+  --r: 20px;
+
+  border-radius: 16px;
+  padding: 1.5rem max(16px, 1.5rem);
+  position: relative;
+  overflow: hidden;
+  color: var(--helder-color-text);
+  background:
+    radial-gradient(circle at 12% 18%, var(--helder-bg-blob-1) 0, transparent 34%),
+    radial-gradient(circle at 88% 12%, var(--helder-bg-blob-2) 0, transparent 30%),
+    radial-gradient(circle at 72% 82%, var(--helder-bg-blob-3) 0, transparent 36%),
+    radial-gradient(circle at 30% 92%, var(--helder-bg-blob-4) 0, transparent 30%),
+    radial-gradient(circle at 50% 45%, var(--helder-bg-blob-5) 0, transparent 26%),
+    var(--helder-color-bg);
+}
+.stage[data-mode="light"] {
+  --helder-color-bg: #f8efe5;
+  --helder-bg-blob-1: rgba(255, 176, 120, .55);
+  --helder-bg-blob-2: rgba(255, 210, 160, .70);
+  --helder-bg-blob-3: rgba(246, 160, 150, .45);
+  --helder-bg-blob-4: rgba(255, 222, 180, .75);
+  --helder-bg-blob-5: rgba(255, 196, 150, .35);
+  --helder-color-text: #2a221c;
+  --helder-color-text-muted: #7a6c60;
+  --helder-color-disabled: #b3a79c;
+  --helder-glass-rgb: 255, 255, 255;
+  --helder-glass-border: rgba(255, 255, 255, .65);
+  --helder-glass-highlight: rgba(255, 255, 255, .85);
+  --helder-shadow-card: 0 .7rem 2rem rgba(110, 70, 30, .13), 0 1px 3px rgba(110, 70, 30, .10);
+  --helder-control-bg: rgba(90, 60, 30, .09);
+  --helder-control-bg-hover: rgba(90, 60, 30, .14);
+  --helder-thumb: #ffffff;
+  --helder-color-light: #e89a00;
+  --helder-color-heat: #e8590c;
+}
+.stage[data-mode="dark"] {
+  --helder-color-bg: #16110d;
+  --helder-bg-blob-1: rgba(255, 120, 40, .22);
+  --helder-bg-blob-2: rgba(150, 80, 170, .20);
+  --helder-bg-blob-3: rgba(255, 160, 80, .16);
+  --helder-bg-blob-4: rgba(200, 90, 70, .18);
+  --helder-bg-blob-5: rgba(255, 140, 60, .10);
+  --helder-color-text: #f3ebe3;
+  --helder-color-text-muted: #ab9d90;
+  --helder-color-disabled: #6a5f56;
+  --helder-glass-rgb: 52, 44, 38;
+  --helder-glass-border: rgba(255, 255, 255, .14);
+  --helder-glass-highlight: rgba(255, 255, 255, .22);
+  --helder-shadow-card: 0 .8rem 2.4rem rgba(0, 0, 0, .45), 0 1px 3px rgba(0, 0, 0, .35);
+  --helder-control-bg: rgba(255, 255, 255, .09);
+  --helder-control-bg-hover: rgba(255, 255, 255, .14);
+  --helder-thumb: #f8f2ec;
+  --helder-color-light: #ffc23d;
+  --helder-color-heat: #ff8a3d;
+}
+/* accentkandidaten, per modus */
+[data-accent="blue"]   .stage[data-mode="light"] { --helder-color-accent: #2563eb; }
+[data-accent="blue"]   .stage[data-mode="dark"]  { --helder-color-accent: #5b8cff; }
+[data-accent="teal"]   .stage[data-mode="light"] { --helder-color-accent: #0d8a8a; }
+[data-accent="teal"]   .stage[data-mode="dark"]  { --helder-color-accent: #2cc4c0; }
+[data-accent="indigo"] .stage[data-mode="light"] { --helder-color-accent: #4f46e5; }
+[data-accent="indigo"] .stage[data-mode="dark"]  { --helder-color-accent: #8f88ff; }
+[data-accent="orange"] .stage[data-mode="light"] { --helder-color-accent: #ff6d00; }
+[data-accent="orange"] .stage[data-mode="dark"]  { --helder-color-accent: #ff7a1a; }
+.stage { --helder-color-on-accent: #ffffff; }
+
+/* kleurgebruik: één accent of statuskleuren per domein */
+.stage { --helder-state-light: var(--helder-color-light); --helder-state-heat: var(--helder-color-heat); --helder-state-cover: var(--helder-color-accent); }
+[data-colors="accent"] .stage { --helder-state-light: var(--helder-color-accent); --helder-state-heat: var(--helder-color-accent); }
+
+/* glas */
+.stage {
+  --helder-glass-fill: rgba(var(--helder-glass-rgb), var(--glass-alpha));
+  --helder-glass-blur: var(--glass-blur);
+  --helder-radius-card: var(--r);
+  --helder-radius-control: calc(var(--r) * .5 + 2px);
+  --helder-space: 1rem;
+}
+[data-depth="border"] .stage { --helder-card-shadow: inset 0 1px 0 var(--helder-glass-highlight); --helder-card-border: var(--helder-glass-border); }
+[data-depth="shadow"] .stage { --helder-card-shadow: var(--helder-shadow-card); --helder-card-border: transparent; }
+[data-depth="both"]   .stage { --helder-card-shadow: inset 0 1px 0 var(--helder-glass-highlight), var(--helder-shadow-card); --helder-card-border: var(--helder-glass-border); }
+
+.cards { display: flex; flex-wrap: wrap; gap: 1.2rem 1rem; align-items: flex-start; }
+figure { margin: 0; display: grid; gap: .4rem; width: var(--card-w, 211px); max-width: 100%; }
+figcaption { font-size: .75rem; color: var(--helder-color-text-muted); overflow-wrap: anywhere; }
+figcaption b { font-weight: 600; }
+
+/* ---------- Kaart ---------- */
+.card {
+  container-type: inline-size;
+  background: var(--helder-glass-fill);
+  -webkit-backdrop-filter: blur(var(--helder-glass-blur)) saturate(170%);
+  backdrop-filter: blur(var(--helder-glass-blur)) saturate(170%);
+  border: 1px solid var(--helder-card-border);
+  box-shadow: var(--helder-card-shadow);
+  border-radius: var(--helder-radius-card);
+  padding: var(--helder-space);
+  display: grid;
+  gap: .85rem;
+  color: var(--helder-color-text);
+  --state: var(--helder-color-text-muted);
+}
+.head { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "icon text value"; align-items: center; gap: .6rem; min-width: 0; }
+.icon {
+  grid-area: icon; width: 2.4rem; height: 2.4rem; border-radius: var(--helder-radius-control);
+  display: grid; place-items: center; background: var(--helder-control-bg); color: var(--helder-color-text-muted);
+}
+.icon svg { width: 1.35rem; height: 1.35rem; }
+.card.active .icon { background: color-mix(in srgb, var(--state) 18%, transparent); color: var(--state); }
+.text { grid-area: text; min-width: 0; }
+.name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sub  { font-size: .857rem; color: var(--helder-color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.value { grid-area: value; font-size: 1.15rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.unit { font-size: .8rem; font-weight: 400; color: var(--helder-color-text-muted); margin-left: .1rem; }
+@container (max-width: 190px) {
+  .head { grid-template-columns: auto 1fr; grid-template-areas: "icon value" "text text"; }
+  .value { justify-self: end; }
+}
+
+/* slider */
+.slider {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 2.3rem; margin: 0; background: transparent; cursor: pointer;
+  --p: 50%;
+}
+.slider::-webkit-slider-runnable-track {
+  height: .6rem; border-radius: 999px;
+  background: linear-gradient(to right, var(--state) 0 var(--p), var(--helder-control-bg) var(--p) 100%);
+}
+.slider::-moz-range-track { height: .6rem; border-radius: 999px; background: var(--helder-control-bg); }
+.slider::-moz-range-progress { height: .6rem; border-radius: 999px; background: var(--state); }
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 1.55rem; height: 1.55rem; margin-top: -.475rem; border-radius: 50%;
+  background: var(--helder-thumb); box-shadow: 0 1px 4px rgba(0,0,0,.25), 0 0 0 1px rgba(0,0,0,.05);
+}
+.slider::-moz-range-thumb { width: 1.55rem; height: 1.55rem; border: 0; border-radius: 50%; background: var(--helder-thumb); box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+.slider:disabled { cursor: default; }
+.slider:disabled::-webkit-slider-thumb { background: var(--helder-control-bg); box-shadow: none; }
+.slider:disabled::-moz-range-thumb { background: var(--helder-control-bg); box-shadow: none; }
+.slider:focus-visible { outline: 2px solid var(--helder-color-accent); outline-offset: 2px; border-radius: 999px; }
+
+/* knoppen en chips */
+.row { display: flex; gap: .4rem; }
+.btn {
+  flex: 1 1 0; min-width: 0; height: 2.4rem; border: 0; border-radius: var(--helder-radius-control);
+  background: var(--helder-control-bg); color: var(--helder-color-text); cursor: pointer;
+  display: grid; place-items: center; font: inherit; font-weight: 600;
+}
+.btn svg { width: 1.2rem; height: 1.2rem; }
+.btn:hover:not(:disabled) { background: var(--helder-control-bg-hover); }
+.btn:disabled { color: var(--helder-color-disabled); cursor: default; }
+.btn:focus-visible, .chip:focus-visible, .switch:focus-visible { outline: 2px solid var(--helder-color-accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+.chip {
+  flex: 1 1 auto; border: 0; border-radius: var(--helder-radius-control); padding: .4rem .6rem;
+  font: inherit; font-size: .857rem; font-weight: 600; white-space: nowrap;
+  background: var(--helder-control-bg); color: var(--helder-color-text); cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--helder-color-accent); color: var(--helder-color-on-accent); }
+.chip:disabled { color: var(--helder-color-disabled); cursor: default; }
+.chip small { font-weight: 400; opacity: .8; margin-left: .2rem; }
+
+/* schakelaar */
+.switch {
+  grid-area: value; width: 2.9rem; height: 1.75rem; border-radius: 999px; border: 0; padding: .175rem;
+  background: var(--helder-control-bg-hover); cursor: pointer; display: flex;
+}
+.switch::after {
+  content: ""; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--helder-thumb);
+  box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .18s ease;
+}
+.switch[aria-checked="true"] { background: var(--state); }
+.switch[aria-checked="true"]::after { transform: translateX(1.15rem); }
+.switch:disabled { cursor: default; }
+.switch:disabled::after { background: var(--helder-control-bg); box-shadow: none; }
+
+/* klimaat */
+.readout { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+.big { font-size: 2.2rem; font-weight: 300; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.big .unit { font-size: 1rem; }
+.meta { font-size: .857rem; color: var(--helder-color-text-muted); font-variant-numeric: tabular-nums; }
+.target { display: grid; grid-template-columns: 2.4rem 1fr 2.4rem; align-items: center; gap: .4rem; }
+.target .btn { flex: none; width: 2.4rem; }
+.target .tv { text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.target .tv small { display: block; font-size: .75rem; font-weight: 400; color: var(--helder-color-text-muted); }
+
+/* onbeschikbaar: alleen kleuren veranderen */
+.card.na .name, .card.na .value, .card.na .big { color: var(--helder-color-disabled); }
+
+@media (prefers-reduced-motion: reduce) { .switch::after { transition: none; } }
+</style>
+
+<div class="wrap" id="app" data-accent="orange" data-colors="domain" data-depth="both">
+  <header>
+    <h1>Helder glas-mockup</h1>
+    <p>Rolluik-, klimaat- en lichtkaart in licht en donker, met echte namen en standen uit Home Assistant. Kies hieronder accent, glas, radius en diepte; de kaarten zijn ook bedienbaar.</p>
+  </header>
+
+  <section class="panel" aria-label="Instellingen">
+    <div class="ctl">
+      <span class="lbl">Accentkleur</span>
+      <div class="seg" data-set="accent">
+        <button data-v="blue"><i class="sw" style="background:#2563eb"></i>Blauw</button>
+        <button data-v="teal"><i class="sw" style="background:#0d8a8a"></i>Groenblauw</button>
+        <button data-v="indigo"><i class="sw" style="background:#4f46e5"></i>Indigo</button>
+        <button data-v="orange"><i class="sw" style="background:#ff6d00"></i>Oranje #ff6d00</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span class="lbl">Kleurgebruik (optie in de editor)</span>
+      <div class="seg" data-set="colors">
+        <button data-v="accent">Eén accent</button>
+        <button data-v="domain">Statuskleur per domein</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span class="lbl">Glas</span>
+      <div class="seg" data-set="glass">
+        <button data-v="subtle">Subtiel</button>
+        <button data-v="medium">Middel</button>
+        <button data-v="strong">Sterk</button>
+      </div>
+      <label class="rngrow" for="blur">Blur <input class="rng" id="blur" type="range" min="0" max="48" step="1"><output id="blurOut"></output></label>
+      <label class="rngrow" for="fill">Vulling <input class="rng" id="fill" type="range" min="5" max="85" step="1"><output id="fillOut"></output></label>
+    </div>
+    <div class="ctl">
+      <span class="lbl">Radius kaart (van strak tot rond)</span>
+      <div class="radii" data-set="radius"></div>
+    </div>
+    <div class="ctl">
+      <span class="lbl">Diepte</span>
+      <div class="seg" data-set="depth">
+        <button data-v="border">Alleen rand</button>
+        <button data-v="shadow">Alleen schaduw</button>
+        <button data-v="both">Rand + schaduw</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span class="lbl">Kaartbreedte</span>
+      <div class="seg" data-set="width">
+        <button data-v="152">152 px</button>
+        <button data-v="211">211 px</button>
+        <button data-v="360">360 px</button>
+        <button data-v="520">520 px</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage" data-mode="light" aria-label="Lichte modus">
+    <h2 class="stage-title">Licht <span>warme lichte achtergrond met cirkelvormige verlopen</span></h2>
+    <div class="cards"></div>
+  </section>
+  <section class="stage" data-mode="dark" aria-label="Donkere modus">
+    <h2 class="stage-title">Donker <span>dezelfde verlopen op een warme donkere basis</span></h2>
+    <div class="cards"></div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const app = document.getElementById('app');
+  const I = {
+    cover: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 3h16M5 3v18M19 3v18M5 7h14M5 11h14M5 15h14"/></svg>',
+    up:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg>',
+    down:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10l6 6 6-6"/></svg>',
+    stop:  '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7.5" y="7.5" width="9" height="9" rx="1.5"/></svg>',
+    therm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 13.5V5a2 2 0 1 1 4 0v8.5a4 4 0 1 1-4 0z"/><path d="M12 9v6"/></svg>',
+    minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>',
+    plus:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12M12 6v12"/></svg>',
+    bulb:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>'
+  };
+  const fmt = (n, d = 1) => n.toLocaleString('nl-NL', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+  // Echte entities en standen uit Home Assistant (gelezen 2026-11-15). Waar "sim" staat, is de staat gesimuleerd.
+  const coverPresets = [['Gesloten', 0], ['Ventileren', 10], ['Halfopen', 50], ['Open', 100]];
+  const climatePresets = [['Uit', null], ['Eco', 16], ['Comfort', 19], ['Warm', 21]];
+  const entities = [
+    { kind: 'cover', id: 'cover.rolluik_beneden_achterzijde_deur', name: 'Deuren tuinzijde', pos: 86 },
+    { kind: 'cover', id: 'cover.rolluik_beneden_achterzijde_raam', name: 'Raam tuinzijde', pos: 10 },
+    { kind: 'cover', id: 'cover.rolluik_boven_achterzijde_raam_hobbykamer', name: 'Rolluik Hobbykamer', na: true, sim: true },
+    { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', mode: 'off', cur: 19.8, hum: 47.8, target: 19, min: 16, max: 22, step: .5 },
+    { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', na: true, sim: true, min: 16, max: 22, step: .5 },
+    { kind: 'light', id: 'light.vloerlamp', name: 'Vloerlamp', area: 'Woonkamer', on: true, bri: 217 },
+    { kind: 'light', id: 'light.eettafel', name: 'Eettafel lamp', area: 'Woonkamer & Keuken', on: true, bri: 49 },
+    { kind: 'light', id: 'light.garage', name: 'Garage', area: 'Garage', on: false, bri: 128 },
+    { kind: 'light', id: 'light.voordeur', name: 'Voordeur', area: 'Voor- & Achtertuin', na: true }
+  ];
+
+  const pct = b => Math.round(b / 255 * 100);
+
+  function coverCard(e) {
+    const na = !!e.na, p = na ? 0 : e.pos;
+    const state = na ? 'Niet beschikbaar' : p === 0 ? 'Gesloten' : p === 100 ? 'Open' : 'Deels open';
+    const dis = na ? 'disabled' : '';
+    return `<div class="card ${na ? 'na' : (p > 0 ? 'active' : '')}" style="--state:var(--helder-state-cover)">
+      <div class="head"><div class="icon">${I.cover}</div>
+        <div class="text"><div class="name">${e.name}</div><div class="sub">${state}</div></div>
+        <div class="value">${na ? '—' : p}<span class="unit">%</span></div></div>
+      <input class="slider" type="range" min="0" max="100" step="1" value="${p}" style="--p:${p}%" aria-label="Positie ${e.name}" data-act="pos" ${dis}>
+      <div class="chips">${coverPresets.map(([l, v]) => `<button class="chip" data-act="preset" data-v="${v}" aria-pressed="${!na && p === v}" ${dis}>${l}</button>`).join('')}</div>
+      <div class="row">
+        <button class="btn" data-act="open" aria-label="Openen" ${dis}>${I.up}</button>
+        <button class="btn" data-act="stop" aria-label="Stoppen" ${dis}>${I.stop}</button>
+        <button class="btn" data-act="close" aria-label="Sluiten" ${dis}>${I.down}</button>
+      </div></div>`;
+  }
+
+  function climateCard(e) {
+    const na = !!e.na, off = !na && e.mode === 'off';
+    const dis = na ? 'disabled' : '';
+    const sub = na ? 'Niet beschikbaar' : off ? 'Uit' : 'Verwarmen';
+    const active = !na && !off && e.cur < e.target;
+    const presetOn = (v) => !na && (v === null ? off : (!off && e.target === v));
+    return `<div class="card ${na ? 'na' : (!off ? 'active' : '')}" style="--state:var(--helder-state-heat)">
+      <div class="head"><div class="icon">${I.therm}</div>
+        <div class="text"><div class="name">${e.name}</div><div class="sub">${sub}${active ? ' · actief' : ''}</div></div></div>
+      <div class="readout"><div class="big">${na ? '—' : fmt(e.cur)}<span class="unit">°C</span></div>
+        <div class="meta">${na ? '—' : fmt(e.hum, 0)} % RV</div></div>
+      <div class="target">
+        <button class="btn" data-act="dec" aria-label="Lager" ${na || off ? 'disabled' : ''}>${I.minus}</button>
+        <div class="tv">${na ? '—' : off ? 'Uit' : fmt(e.target) + ' °C'}<small>doel</small></div>
+        <button class="btn" data-act="inc" aria-label="Hoger" ${na || off ? 'disabled' : ''}>${I.plus}</button>
+      </div>
+      <div class="chips">${climatePresets.map(([l, v]) => `<button class="chip" data-act="cpreset" data-v="${v}" aria-pressed="${presetOn(v)}" ${dis}>${l}${v !== null ? `<small>${v}°</small>` : ''}</button>`).join('')}</div>
+    </div>`;
+  }
+
+  function lightCard(e) {
+    const na = !!e.na, on = !na && e.on, p = na ? 0 : pct(e.bri);
+    const dis = na ? 'disabled' : '';
+    return `<div class="card ${na ? 'na' : (on ? 'active' : '')}" style="--state:var(--helder-state-light)">
+      <div class="head"><div class="icon">${I.bulb}</div>
+        <div class="text"><div class="name">${e.name}</div><div class="sub">${na ? 'Niet beschikbaar' : on ? 'Aan · ' + p + ' %' : 'Uit'}</div></div>
+        <button class="switch" role="switch" aria-checked="${on}" aria-label="${e.name} aan/uit" data-act="toggle" ${dis}></button></div>
+      <input class="slider" type="range" min="1" max="100" step="1" value="${on ? p : 0}" style="--p:${on ? p : 0}%" aria-label="Helderheid ${e.name}" data-act="bri" ${dis}>
+    </div>`;
+  }
+
+  const renderers = { cover: coverCard, climate: climateCard, light: lightCard };
+  // Iedere modus krijgt een eigen kopie van de staat, zodat je licht en donker los kunt bedienen.
+  const stages = [...document.querySelectorAll('.stage')].map(el => ({ el, list: entities.map(e => ({ ...e })) }));
+
+  function caption(e) {
+    const note = e.na ? (e.sim ? 'unavailable (gesimuleerd)' : 'unavailable (echt)') : 'echte stand';
+    return `<figcaption><b>${e.id}</b> · ${note}</figcaption>`;
+  }
+  function renderStage(s) {
+    s.el.querySelector('.cards').innerHTML = s.list.map((e, i) => `<figure data-i="${i}">${renderers[e.kind](e)}${caption(e)}</figure>`).join('');
+  }
+  function renderFig(s, i) {
+    const fig = s.el.querySelector(`figure[data-i="${i}"]`);
+    fig.innerHTML = renderers[s.list[i].kind](s.list[i]) + caption(s.list[i]);
+  }
+
+  stages.forEach(s => {
+    renderStage(s);
+    s.el.addEventListener('input', ev => {
+      const t = ev.target; if (!t.classList.contains('slider')) return;
+      t.style.setProperty('--p', t.value + '%');
+      const fig = t.closest('figure'); const e = s.list[+fig.dataset.i];
+      if (e.kind === 'cover') { fig.querySelector('.value').firstChild.textContent = t.value; }
+      if (e.kind === 'light') { fig.querySelector('.sub').textContent = 'Aan · ' + t.value + ' %'; }
+    });
+    s.el.addEventListener('change', ev => {
+      const t = ev.target; if (!t.classList.contains('slider')) return;
+      const i = +t.closest('figure').dataset.i, e = s.list[i];
+      if (e.kind === 'cover') e.pos = +t.value;
+      if (e.kind === 'light') { e.on = true; e.bri = Math.round(+t.value / 100 * 255); }
+      renderFig(s, i);
+    });
+    s.el.addEventListener('click', ev => {
+      const b = ev.target.closest('button[data-act]'); if (!b || b.disabled) return;
+      const i = +b.closest('figure').dataset.i, e = s.list[i], a = b.dataset.act;
+      if (a === 'preset') e.pos = +b.dataset.v;
+      if (a === 'open') e.pos = 100;
+      if (a === 'close') e.pos = 0;
+      if (a === 'toggle') e.on = !e.on;
+      if (a === 'dec') e.target = Math.max(e.min, e.target - e.step);
+      if (a === 'inc') e.target = Math.min(e.max, e.target + e.step);
+      if (a === 'cpreset') { if (b.dataset.v === 'null') e.mode = 'off'; else { e.mode = 'heat'; e.target = +b.dataset.v; } }
+      renderFig(s, i);
+    });
+  });
+
+  // ---------- Bedieningspaneel ----------
+  const glassPresets = { subtle: [12, 55], medium: [20, 40], strong: [32, 25] };
+  const radii = [6, 10, 14, 18, 22, 28];
+  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211 };
+  try { Object.assign(st, JSON.parse(localStorage.getItem('helder-mockup') || '{}')); } catch (_) {}
+
+  document.querySelector('[data-set="radius"]').innerHTML = radii.map(r => `<button data-v="${r}" style="--r:${r}px">${r} px</button>`).join('');
+  const blur = document.getElementById('blur'), fill = document.getElementById('fill');
+
+  function apply() {
+    app.dataset.accent = st.accent; app.dataset.colors = st.colors; app.dataset.depth = st.depth;
+    stages.forEach(s => {
+      s.el.style.setProperty('--glass-blur', st.blur + 'px');
+      s.el.style.setProperty('--glass-alpha', st.fill / 100);
+      s.el.style.setProperty('--r', st.radius + 'px');
+      s.el.style.setProperty('--card-w', st.width + 'px');
+    });
+    blur.value = st.blur; fill.value = st.fill;
+    document.getElementById('blurOut').textContent = st.blur + ' px';
+    document.getElementById('fillOut').textContent = st.fill + ' %';
+    document.querySelectorAll('[data-set]').forEach(g => {
+      const k = g.dataset.set;
+      g.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v) === String(st[k])));
+    });
+    try { localStorage.setItem('helder-mockup', JSON.stringify(st)); } catch (_) {}
+  }
+  document.querySelectorAll('[data-set]').forEach(g => g.addEventListener('click', ev => {
+    const b = ev.target.closest('button'); if (!b) return;
+    const k = g.dataset.set, v = b.dataset.v;
+    st[k] = (k === 'radius' || k === 'width') ? +v : v;
+    if (k === 'glass') [st.blur, st.fill] = glassPresets[v];
+    apply();
+  }));
+  blur.addEventListener('input', () => { st.blur = +blur.value; st.glass = ''; apply(); });
+  fill.addEventListener('input', () => { st.fill = +fill.value; st.glass = ''; apply(); });
+  // Voor screenshots: #width=360 enz. overschrijft de opgeslagen keuze.
+  for (const [k, v] of new URLSearchParams(location.hash.slice(1))) {
+    if (k in st) { st[k] = isNaN(+v) ? v : +v; if (k === 'glass') [st.blur, st.fill] = glassPresets[v]; }
+  }
+  apply();
+})();
+</script>
+<!--ARTIFACT-END-->
+</html>
