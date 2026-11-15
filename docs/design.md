@@ -97,4 +97,10 @@ deploy/deploy.sh uitrol naar HA
 | 2026-11-15 | Claude mag de hele HA-installatie lezen (alleen lezen; wijzigen blijft na toestemming) |
 | 2026-11-15 | Geen vetgedrukte tekst in kaarten: alle kaarttekst normaal gewicht (400), grote readouts licht (300) |
 | 2026-11-15 | Klimaatkaart: zolang de verwarming actief verwarmt (`hvac_action: heating`), toont de kaart een lichte rode gloed vanaf de bovenrand richting het midden (token `--helder-heat-glow`) |
+| 2026-11-15 | Lichtkaart: een brandende lamp krijgt een gloed vanaf de bovenrand in de echte lampkleur (`rgb_color`), sterkte schaalt mee met de helderheid; zonder kleur valt hij terug op de statuskleur |
+| 2026-11-15 | Rolluikstand niet als vlak in de kaartachtergrond tonen (voorstel afgewezen) |
+| 2026-11-15 | Bij `prefers-reduced-transparency: reduce` wordt het glas bijna dekkend (vulling 94 %, geen blur) |
+| 2026-11-15 | Bezig-staat (pulserende waarde tot HA bevestigt, terugveren bij mislukken): eerst los voorbeeld in de mockup, nog niet besloten |
+| 2026-11-15 | Rolluikkaart op smalle breedte (152 px): presets als één knop met keuzemenu, met zichtbaar pijltje en rand zodat het meteen als dropdown herkenbaar is |
+| 2026-11-15 | Prestaties blur later meten op het oudste apparaat (iPhone 12 Pro Max); iPad is niet oud |
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |

@@ -132,6 +132,8 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
   --helder-color-light: #e89a00;
   --helder-color-heat: #e8590c;
   --helder-heat-glow: rgba(235, 45, 30, .26);
+  --helder-light-glow-strength: 34%;
+  --helder-color-error: #c62828;
 }
 .stage[data-mode="dark"] {
   --helder-color-bg: #16110d;
@@ -153,6 +155,8 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
   --helder-color-light: #ffc23d;
   --helder-color-heat: #ff8a3d;
   --helder-heat-glow: rgba(255, 70, 50, .30);
+  --helder-light-glow-strength: 30%;
+  --helder-color-error: #ff6b6b;
 }
 /* accentkleur: per modus gezet vanuit het paneel (zie ACCENTS in het script) */
 /* tijdelijk: achtergrondverlopen volgen de accentkleur */
@@ -325,6 +329,57 @@ figcaption b { font-weight: 400; }
 /* klimaat: rode gloed vanaf de bovenrand zolang de verwarming actief verwarmt */
 .card.heating { --card-glow: radial-gradient(ellipse 130% 75% at 50% 0%, var(--helder-heat-glow) 0%, transparent 70%); }
 
+/* licht: gloed vanaf de bovenrand in de echte lampkleur (rgb_color); zonder kleur valt hij terug op de statuskleur.
+   De sterkte schaalt mee met de helderheid. */
+.card.lit {
+  --card-glow: radial-gradient(ellipse 130% 80% at 50% 0%,
+    color-mix(in srgb, var(--lamp, var(--helder-state-light)) calc(var(--helder-light-glow-strength) * (.35 + .65 * var(--bri-f, 1))), transparent) 0%,
+    transparent 72%);
+}
+
+/* rolluik: op smalle breedtes worden de presets één knop met keuzemenu */
+.dd {
+  display: none; position: relative; align-items: center; justify-content: space-between; gap: .4rem;
+  height: 2.4rem; padding: 0 .7rem; border-radius: var(--helder-radius-control);
+  background: var(--helder-control-bg);
+  border: 1px solid color-mix(in srgb, var(--helder-color-text) 22%, transparent);
+  color: var(--helder-color-text); font-size: .857rem;
+}
+.dd-label { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dd-label.empty { color: var(--helder-color-text-muted); }
+.dd svg { width: 1.1rem; height: 1.1rem; flex: none; color: var(--helder-color-text-muted); }
+.dd select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+.dd select:disabled { cursor: default; }
+.dd:focus-within { outline: 2px solid var(--helder-color-accent); outline-offset: 2px; }
+.card.na .dd { color: var(--helder-color-disabled); border-color: color-mix(in srgb, var(--helder-color-disabled) 30%, transparent); }
+@container (max-width: 140px) {
+  .cover-chips { display: none; }
+  .dd { display: flex; }
+}
+
+/* verminderde transparantie (systeeminstelling of simulatie in het paneel): glas wordt bijna dekkend */
+@media (prefers-reduced-transparency: reduce) {
+  .stage { --helder-glass-fill: rgba(var(--helder-glass-rgb), .94); }
+  .card { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+[data-rt="on"] .stage { --helder-glass-fill: rgba(var(--helder-glass-rgb), .94); }
+[data-rt="on"] .card { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* voorbeeld bezig-staat: waarde pulseert tot HA bevestigt; bij mislukken veert de kaart terug */
+.card.pending .value, .card.pending .sub, .card.pending .icon { animation: helder-pulse 1s ease-in-out infinite; }
+.card.failed { animation: helder-shake .38s ease-in-out; }
+.card.failed .sub { color: var(--helder-color-error); }
+@keyframes helder-pulse { 50% { opacity: .4; } }
+@keyframes helder-shake { 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+@media (prefers-reduced-motion: reduce) {
+  .card.pending .value, .card.pending .sub, .card.pending .icon { animation: none; opacity: .55; }
+  .card.failed { animation: none; }
+}
+.demo { display: grid; gap: .8rem; }
+.demo-head h2 { margin: 0; font-size: 1.1rem; font-weight: 700; }
+.demo-head p { margin: .2rem 0 0; color: var(--page-muted); max-width: 70ch; }
+.demo-stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); gap: 1rem; }
+
 /* onbeschikbaar: alleen kleuren veranderen */
 .card.na .name, .card.na .value, .card.na .big { color: var(--helder-color-disabled); }
 
@@ -369,6 +424,13 @@ figcaption b { font-weight: 400; }
       <label class="rngrow" for="fill">Vulling <input class="rng" id="fill" type="range" min="5" max="85" step="1"><output id="fillOut"></output></label>
     </div>
     <div class="ctl">
+      <span class="lbl">Verminderde transparantie</span>
+      <div class="seg" data-set="rt">
+        <button data-v="off">Uit</button>
+        <button data-v="on">Simuleer aan</button>
+      </div>
+    </div>
+    <div class="ctl">
       <span class="lbl">Glans</span>
       <div class="seg" data-set="gloss">
         <button data-v="0">Uit</button>
@@ -407,6 +469,21 @@ figcaption b { font-weight: 400; }
     <h2 class="stage-title">Donker <span>dezelfde verlopen op een warme donkere basis</span></h2>
     <div class="cards"></div>
   </section>
+
+  <section class="demo" aria-label="Voorbeeld bezig-staat">
+    <div class="demo-head">
+      <h2>Voorbeeld: bezig-staat (nog niet besloten)</h2>
+      <p>Bedien een kaart. De nieuwe stand verschijnt meteen, de waarde pulseert tot Home Assistant hem bevestigt (hier gesimuleerd na 1,5 s). Bij een mislukte opdracht veert de kaart terug naar de oude stand.</p>
+    </div>
+    <div class="seg" data-set="outcome">
+      <button data-v="ok">Opdracht lukt</button>
+      <button data-v="fail">Opdracht mislukt</button>
+    </div>
+    <div class="demo-stages">
+      <section class="stage" data-mode="light" data-demo aria-label="Bezig-staat licht"><h2 class="stage-title">Licht</h2><div class="cards"></div></section>
+      <section class="stage" data-mode="dark" data-demo aria-label="Bezig-staat donker"><h2 class="stage-title">Donker</h2><div class="cards"></div></section>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -420,6 +497,7 @@ figcaption b { font-weight: 400; }
     therm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 13.5V5a2 2 0 1 1 4 0v8.5a4 4 0 1 1-4 0z"/><path d="M12 9v6"/></svg>',
     minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>',
     plus:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12M12 6v12"/></svg>',
+    chev:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg>',
     bulb:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>'
   };
   const fmt = (n, d = 1) => n.toLocaleString('nl-NL', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -440,24 +518,28 @@ figcaption b { font-weight: 400; }
     { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', mode: 'off', cur: 19.8, hum: 47.8, target: 19, min: 16, max: 22, step: .5 },
     { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', mode: 'heat', cur: 19.8, hum: 47.8, target: 21, min: 16, max: 22, step: .5, sim: true },
     { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', na: true, sim: true, min: 16, max: 22, step: .5 },
-    { kind: 'light', id: 'light.vloerlamp', name: 'Vloerlamp', area: 'Woonkamer', on: true, bri: 217 },
+    { kind: 'light', id: 'light.vloerlamp', name: 'Vloerlamp', area: 'Woonkamer', on: true, bri: 217, rgb: [255, 137, 14] },
     { kind: 'light', id: 'light.eettafel', name: 'Eettafel lamp', area: 'Woonkamer & Keuken', on: true, bri: 49 },
     { kind: 'light', id: 'light.garage', name: 'Garage', area: 'Garage', on: false, bri: 128 },
     { kind: 'light', id: 'light.voordeur', name: 'Voordeur', area: 'Voor- & Achtertuin', na: true }
   ];
 
   const pct = b => Math.round(b / 255 * 100);
+  const flags = e => `${e._pending ? ' pending' : ''}${e._failed ? ' failed' : ''}`;
 
   function coverCard(e) {
     const na = !!e.na, p = na ? 0 : e.pos;
     const state = na ? 'Niet beschikbaar' : p === 0 ? 'Gesloten' : p === 100 ? 'Open' : 'Deels open';
     const dis = na ? 'disabled' : '';
-    return `<div class="card ${na ? 'na' : (p > 0 ? 'active' : '')}" style="--state:var(--helder-state-cover)">
+    const cur = na ? null : coverPresets.find(([, v]) => v === p);
+    return `<div class="card ${na ? 'na' : (p > 0 ? 'active' : '')}${flags(e)}" style="--state:var(--helder-state-cover)">
       <div class="head"><div class="icon">${I.cover}</div>
-        <div class="text"><div class="name">${e.name}</div><div class="sub">${state}</div></div>
+        <div class="text"><div class="name">${e.name}</div><div class="sub">${e._failed ? 'Mislukt, teruggezet' : state}</div></div>
         <div class="value">${na ? '—' : p}<span class="unit">%</span></div></div>
       <input class="slider" type="range" min="0" max="100" step="1" value="${p}" style="--p:${p}%" aria-label="Positie ${e.name}" data-act="pos" ${dis}>
-      <div class="chips">${coverPresets.map(([l, v]) => `<button class="chip" data-act="preset" data-v="${v}" aria-pressed="${!na && p === v}" ${dis}>${l}</button>`).join('')}</div>
+      <div class="dd"><span class="dd-label${cur ? '' : ' empty'}">${cur ? cur[0] : 'Kies stand'}</span>${I.chev}
+        <select data-act="preset-select" aria-label="Stand ${e.name}" ${dis}><option value="" disabled ${cur ? '' : 'selected'}>Kies stand</option>${coverPresets.map(([l, v]) => `<option value="${v}" ${cur && cur[1] === v ? 'selected' : ''}>${l} (${v} %)</option>`).join('')}</select></div>
+      <div class="chips cover-chips">${coverPresets.map(([l, v]) => `<button class="chip" data-act="preset" data-v="${v}" aria-pressed="${!na && p === v}" ${dis}>${l}</button>`).join('')}</div>
       <div class="row">
         <button class="btn" data-act="open" aria-label="Openen" ${dis}>${I.up}</button>
         <button class="btn" data-act="stop" aria-label="Stoppen" ${dis}>${I.stop}</button>
@@ -488,9 +570,10 @@ figcaption b { font-weight: 400; }
   function lightCard(e) {
     const na = !!e.na, on = !na && e.on, p = na ? 0 : pct(e.bri);
     const dis = na ? 'disabled' : '';
-    return `<div class="card ${na ? 'na' : (on ? 'active' : '')}" style="--state:var(--helder-state-light)">
+    const lamp = on && e.rgb ? `--lamp:rgb(${e.rgb.join(' ')});` : '';
+    return `<div class="card ${na ? 'na' : (on ? 'active lit' : '')}${flags(e)}" style="--state:var(--helder-state-light);${lamp}--bri-f:${on ? (e.bri / 255).toFixed(2) : 0}">
       <div class="head"><div class="icon">${I.bulb}</div>
-        <div class="text"><div class="name">${e.name}</div><div class="sub">${na ? 'Niet beschikbaar' : on ? 'Aan · ' + p + ' %' : 'Uit'}</div></div>
+        <div class="text"><div class="name">${e.name}</div><div class="sub">${e._failed ? 'Mislukt, teruggezet' : na ? 'Niet beschikbaar' : on ? 'Aan · ' + p + ' %' : 'Uit'}</div></div>
         <button class="switch" role="switch" aria-checked="${on}" aria-label="${e.name} aan/uit" data-act="toggle" ${dis}></button></div>
       <input class="slider" type="range" min="1" max="100" step="1" value="${on ? p : 0}" style="--p:${on ? p : 0}%" aria-label="Helderheid ${e.name}" data-act="bri" ${dis}>
     </div>`;
@@ -505,7 +588,8 @@ figcaption b { font-weight: 400; }
 
   const renderers = { cover: coverCard, climate: climateCard, light: lightCard, swipe: swipeCard };
   // Iedere modus krijgt een eigen kopie van de staat, zodat je licht en donker los kunt bedienen.
-  const stages = [...document.querySelectorAll('.stage')].map(el => ({ el, list: structuredClone(entities) }));
+  const demoEntities = [entities.find(e => e.id === 'light.vloerlamp'), entities.find(e => e.id === 'cover.rolluik_beneden_achterzijde_deur')];
+  const stages = [...document.querySelectorAll('.stage')].map(el => ({ el, demo: 'demo' in el.dataset, list: structuredClone(el.dataset.demo !== undefined ? demoEntities : entities) }));
 
   function caption(e) {
     if (e.kind === 'swipe') return `<figcaption><b>swipe-card</b> · ${e.items.length} rolluiken, echte standen · veeg of tik op de stipjes</figcaption>`;
@@ -533,6 +617,21 @@ figcaption b { font-weight: 400; }
     fig.innerHTML = renderers[s.list[i].kind](s.list[i]) + caption(s.list[i]);
   }
 
+  const snap = e => { const c = { ...e }; delete c._pending; delete c._failed; return c; };
+  // Optimistisch: eerst de nieuwe stand tonen. In het voorbeeld bezig-staat volgt daarna een gesimuleerde bevestiging van HA.
+  function commit(s, r, before) {
+    if (!s.demo) { rerender(s, r); return; }
+    const e = r.e; e._pending = true; e._failed = false; rerender(s, r);
+    clearTimeout(e._t);
+    e._t = setTimeout(() => {
+      e._pending = false;
+      if (st.outcome === 'fail') {
+        Object.assign(e, before, { _failed: true }); rerender(s, r);
+        e._t = setTimeout(() => { e._failed = false; rerender(s, r); }, 2200);
+      } else rerender(s, r);
+    }, 1500);
+  }
+
   stages.forEach(s => {
     renderStage(s);
     s.el.addEventListener('input', ev => {
@@ -543,17 +642,19 @@ figcaption b { font-weight: 400; }
       if (e.kind === 'light') { box.querySelector('.sub').textContent = 'Aan · ' + t.value + ' %'; }
     });
     s.el.addEventListener('change', ev => {
-      const t = ev.target; if (!t.classList.contains('slider')) return;
-      const r = resolve(s, t), e = r.e;
+      const t = ev.target;
+      if (t.tagName === 'SELECT') { const r = resolve(s, t), before = snap(r.e); r.e.pos = +t.value; commit(s, r, before); return; }
+      if (!t.classList.contains('slider')) return;
+      const r = resolve(s, t), e = r.e, before = snap(e);
       if (e.kind === 'cover') e.pos = +t.value;
       if (e.kind === 'light') { e.on = true; e.bri = Math.round(+t.value / 100 * 255); }
-      rerender(s, r);
+      commit(s, r, before);
     });
     s.el.addEventListener('click', ev => {
       const dot = ev.target.closest('.dot');
       if (dot) { const t = dot.closest('.swipe').querySelector('.track'); const sl = t.children, step = sl.length > 1 ? sl[1].offsetLeft - sl[0].offsetLeft : t.clientWidth; t.scrollTo({ left: +dot.dataset.go * step, behavior: 'smooth' }); return; }
       const b = ev.target.closest('button[data-act]'); if (!b || b.disabled) return;
-      const r = resolve(s, b), e = r.e, a = b.dataset.act;
+      const r = resolve(s, b), e = r.e, a = b.dataset.act, before = snap(e);
       if (a === 'preset') e.pos = +b.dataset.v;
       if (a === 'open') e.pos = 100;
       if (a === 'close') e.pos = 0;
@@ -561,7 +662,7 @@ figcaption b { font-weight: 400; }
       if (a === 'dec') e.target = Math.max(e.min, e.target - e.step);
       if (a === 'inc') e.target = Math.min(e.max, e.target + e.step);
       if (a === 'cpreset') { if (b.dataset.v === 'null') e.mode = 'off'; else { e.mode = 'heat'; e.target = +b.dataset.v; } }
-      rerender(s, r);
+      commit(s, r, before);
     });
   });
 
@@ -603,14 +704,14 @@ figcaption b { font-weight: 400; }
   // ---------- Bedieningspaneel ----------
   const glassPresets = { subtle: [12, 55], medium: [20, 40], strong: [32, 25] };
   const radii = [6, 10, 14, 18, 22, 28];
-  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211, bg: 'accent', gloss: 0.45 };
+  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211, bg: 'accent', gloss: 0.45, rt: 'off', outcome: 'ok' };
   try { Object.assign(st, JSON.parse(localStorage.getItem('helder-mockup') || '{}')); } catch (_) {}
 
   document.querySelector('[data-set="radius"]').innerHTML = radii.map(r => `<button data-v="${r}" style="--r:${r}px">${r} px</button>`).join('');
   const blur = document.getElementById('blur'), fill = document.getElementById('fill');
 
   function apply() {
-    app.dataset.accent = st.accent; app.dataset.colors = st.colors; app.dataset.depth = st.depth; app.dataset.bg = st.bg;
+    app.dataset.accent = st.accent; app.dataset.colors = st.colors; app.dataset.depth = st.depth; app.dataset.bg = st.bg; app.dataset.rt = st.rt;
     stages.forEach(s => {
       s.el.style.setProperty('--glass-blur', st.blur + 'px');
       s.el.style.setProperty('--glass-alpha', st.fill / 100);
