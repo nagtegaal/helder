@@ -96,4 +96,5 @@ deploy/deploy.sh uitrol naar HA
 | 2026-11-15 | Lichtkaart: aan/uit met helderheidsslider |
 | 2026-11-15 | Claude mag de hele HA-installatie lezen (alleen lezen; wijzigen blijft na toestemming) |
 | 2026-11-15 | Geen vetgedrukte tekst in kaarten: alle kaarttekst normaal gewicht (400), grote readouts licht (300) |
+| 2026-11-15 | Klimaatkaart: zolang de verwarming actief verwarmt (`hvac_action: heating`), toont de kaart een lichte rode gloed vanaf de bovenrand richting het midden (token `--helder-heat-glow`) |
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |

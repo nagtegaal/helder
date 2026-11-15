@@ -131,6 +131,7 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
   --helder-thumb: #ffffff;
   --helder-color-light: #e89a00;
   --helder-color-heat: #e8590c;
+  --helder-heat-glow: rgba(235, 45, 30, .26);
 }
 .stage[data-mode="dark"] {
   --helder-color-bg: #16110d;
@@ -151,6 +152,7 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
   --helder-thumb: #f8f2ec;
   --helder-color-light: #ffc23d;
   --helder-color-heat: #ff8a3d;
+  --helder-heat-glow: rgba(255, 70, 50, .30);
 }
 /* accentkleur: per modus gezet vanuit het paneel (zie ACCENTS in het script) */
 /* tijdelijk: achtergrondverlopen volgen de accentkleur */
@@ -199,6 +201,7 @@ figcaption b { font-weight: 400; }
   container-type: inline-size;
   /* glans: diagonale lichtval bovenaan + glasvulling */
   background:
+    var(--card-glow, linear-gradient(transparent, transparent)),
     linear-gradient(160deg, rgba(255, 255, 255, var(--helder-gloss)) 0%, rgba(255, 255, 255, calc(var(--helder-gloss) * .25)) 30%, rgba(255, 255, 255, 0) 55%),
     linear-gradient(var(--helder-glass-fill), var(--helder-glass-fill));
   -webkit-backdrop-filter: blur(var(--helder-glass-blur)) saturate(170%);
@@ -313,6 +316,9 @@ figcaption b { font-weight: 400; }
 .dot:focus-visible { outline: 2px solid var(--helder-color-accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .dot { transition: none; } }
 
+/* klimaat: rode gloed vanaf de bovenrand zolang de verwarming actief verwarmt */
+.card.heating { --card-glow: radial-gradient(ellipse 130% 75% at 50% 0%, var(--helder-heat-glow) 0%, transparent 70%); }
+
 /* onbeschikbaar: alleen kleuren veranderen */
 .card.na .name, .card.na .value, .card.na .big { color: var(--helder-color-disabled); }
 
@@ -426,6 +432,7 @@ figcaption b { font-weight: 400; }
       { kind: 'cover', id: 'cover.rolluik_boven_achterzijde_raam_scott', name: 'Raam slaapkamer Scott', pos: 60 }
     ] },
     { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', mode: 'off', cur: 19.8, hum: 47.8, target: 19, min: 16, max: 22, step: .5 },
+    { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', mode: 'heat', cur: 19.8, hum: 47.8, target: 21, min: 16, max: 22, step: .5, sim: true },
     { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', na: true, sim: true, min: 16, max: 22, step: .5 },
     { kind: 'light', id: 'light.vloerlamp', name: 'Vloerlamp', area: 'Woonkamer', on: true, bri: 217 },
     { kind: 'light', id: 'light.eettafel', name: 'Eettafel lamp', area: 'Woonkamer & Keuken', on: true, bri: 49 },
@@ -458,7 +465,7 @@ figcaption b { font-weight: 400; }
     const sub = na ? 'Niet beschikbaar' : off ? 'Uit' : 'Verwarmen';
     const active = !na && !off && e.cur < e.target;
     const presetOn = (v) => !na && (v === null ? off : (!off && e.target === v));
-    return `<div class="card ${na ? 'na' : (!off ? 'active' : '')}" style="--state:var(--helder-state-heat)">
+    return `<div class="card ${na ? 'na' : (!off ? 'active' : '')}${active ? ' heating' : ''}" style="--state:var(--helder-state-heat)">
       <div class="head"><div class="icon">${I.therm}</div>
         <div class="text"><div class="name">${e.name}</div><div class="sub">${sub}${active ? ' · actief' : ''}</div></div></div>
       <div class="readout"><div class="big">${na ? '—' : fmt(e.cur)}<span class="unit">°C</span></div>
@@ -496,7 +503,7 @@ figcaption b { font-weight: 400; }
 
   function caption(e) {
     if (e.kind === 'swipe') return `<figcaption><b>swipe-card</b> · ${e.items.length} rolluiken, echte standen · veeg of tik op de stipjes</figcaption>`;
-    const note = e.na ? (e.sim ? 'unavailable (gesimuleerd)' : 'unavailable (echt)') : 'echte stand';
+    const note = e.na ? (e.sim ? 'unavailable (gesimuleerd)' : 'unavailable (echt)') : e.sim ? 'verwarmt naar 21 °C (gesimuleerd)' : 'echte stand';
     return `<figcaption><b>${e.id}</b> · ${note}</figcaption>`;
   }
   function renderStage(s) {
