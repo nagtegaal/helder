@@ -295,6 +295,24 @@ figcaption b { font-weight: 400; }
 .target .tv { text-align: center; font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .target .tv small { display: block; font-size: .75rem; font-weight: 400; color: var(--helder-color-text-muted); }
 
+/* swipe-kaart: slides naast elkaar met snap, stipjes eronder */
+.swipe { display: grid; gap: .5rem; min-width: 0; }
+.track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: var(--helder-space);
+  overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain;
+  padding-bottom: 1.4rem; margin-bottom: -1.4rem;
+}
+.track::-webkit-scrollbar { display: none; }
+.slide { scroll-snap-align: start; min-width: 0; }
+.dots { display: flex; justify-content: center; gap: .4rem; position: relative; }
+.dot {
+  width: .5rem; height: .5rem; padding: 0; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--helder-color-text-muted); opacity: .4; transition: width .2s ease, opacity .2s ease;
+}
+.dot[aria-current="true"] { width: 1.4rem; opacity: 1; background: var(--helder-color-accent); }
+.dot:focus-visible { outline: 2px solid var(--helder-color-accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .dot { transition: none; } }
+
 /* onbeschikbaar: alleen kleuren veranderen */
 .card.na .name, .card.na .value, .card.na .big { color: var(--helder-color-disabled); }
 
@@ -401,6 +419,12 @@ figcaption b { font-weight: 400; }
     { kind: 'cover', id: 'cover.rolluik_beneden_achterzijde_deur', name: 'Deuren tuinzijde', pos: 86 },
     { kind: 'cover', id: 'cover.rolluik_beneden_achterzijde_raam', name: 'Raam tuinzijde', pos: 10 },
     { kind: 'cover', id: 'cover.rolluik_boven_achterzijde_raam_hobbykamer', name: 'Rolluik Hobbykamer', na: true, sim: true },
+    { kind: 'swipe', id: 'custom:swipe-card', items: [
+      { kind: 'cover', id: 'cover.rolluik_beneden_voorzijde_raam', name: 'Raam voorzijde', pos: 100 },
+      { kind: 'cover', id: 'cover.rolluik_boven_voorzijde_raam_links', name: 'Rolluik raam (links)', pos: 60 },
+      { kind: 'cover', id: 'cover.rolluik_boven_voorzijde_raam_rechts', name: 'Rolluik (rechts)', pos: 60 },
+      { kind: 'cover', id: 'cover.rolluik_boven_achterzijde_raam_scott', name: 'Raam slaapkamer Scott', pos: 60 }
+    ] },
     { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', mode: 'off', cur: 19.8, hum: 47.8, target: 19, min: 16, max: 22, step: .5 },
     { kind: 'climate', id: 'climate.woonkamer_keuken', name: 'Verwarming', area: 'Woonkamer & Keuken', na: true, sim: true, min: 16, max: 22, step: .5 },
     { kind: 'light', id: 'light.vloerlamp', name: 'Vloerlamp', area: 'Woonkamer', on: true, bri: 217 },
@@ -459,16 +483,36 @@ figcaption b { font-weight: 400; }
     </div>`;
   }
 
-  const renderers = { cover: coverCard, climate: climateCard, light: lightCard };
+  function swipeCard(e) {
+    return `<div class="swipe">
+      <div class="track">${e.items.map((it, j) => `<div class="slide" data-j="${j}">${renderers[it.kind](it)}</div>`).join('')}</div>
+      <div class="dots">${e.items.map((it, j) => `<button class="dot" data-go="${j}" aria-label="Naar ${it.name}" aria-current="${j === 0}"></button>`).join('')}</div>
+    </div>`;
+  }
+
+  const renderers = { cover: coverCard, climate: climateCard, light: lightCard, swipe: swipeCard };
   // Iedere modus krijgt een eigen kopie van de staat, zodat je licht en donker los kunt bedienen.
-  const stages = [...document.querySelectorAll('.stage')].map(el => ({ el, list: entities.map(e => ({ ...e })) }));
+  const stages = [...document.querySelectorAll('.stage')].map(el => ({ el, list: structuredClone(entities) }));
 
   function caption(e) {
+    if (e.kind === 'swipe') return `<figcaption><b>swipe-card</b> · ${e.items.length} rolluiken, echte standen · veeg of tik op de stipjes</figcaption>`;
     const note = e.na ? (e.sim ? 'unavailable (gesimuleerd)' : 'unavailable (echt)') : 'echte stand';
     return `<figcaption><b>${e.id}</b> · ${note}</figcaption>`;
   }
   function renderStage(s) {
     s.el.querySelector('.cards').innerHTML = s.list.map((e, i) => `<figure data-i="${i}">${renderers[e.kind](e)}${caption(e)}</figure>`).join('');
+    s.el.querySelectorAll('.track').forEach(t => t.addEventListener('scroll', () => {
+      const k = Math.round(t.scrollLeft / t.clientWidth);
+      t.parentElement.querySelectorAll('.dot').forEach((d, j) => d.setAttribute('aria-current', String(j === k)));
+    }, { passive: true }));
+  }
+  // Zoek de entity bij een element; binnen een swipe-kaart is dat de slide.
+  function resolve(s, el) {
+    const fig = el.closest('figure'), i = +fig.dataset.i, sl = el.closest('.slide');
+    return { fig, i, sl, e: sl ? s.list[i].items[+sl.dataset.j] : s.list[i] };
+  }
+  function rerender(s, r) {
+    if (r.sl) r.sl.innerHTML = renderers[r.e.kind](r.e); else renderFig(s, r.i);
   }
   function renderFig(s, i) {
     const fig = s.el.querySelector(`figure[data-i="${i}"]`);
@@ -480,20 +524,22 @@ figcaption b { font-weight: 400; }
     s.el.addEventListener('input', ev => {
       const t = ev.target; if (!t.classList.contains('slider')) return;
       t.style.setProperty('--p', t.value + '%');
-      const fig = t.closest('figure'); const e = s.list[+fig.dataset.i];
-      if (e.kind === 'cover') { fig.querySelector('.value').firstChild.textContent = t.value; }
-      if (e.kind === 'light') { fig.querySelector('.sub').textContent = 'Aan · ' + t.value + ' %'; }
+      const { e } = resolve(s, t), box = t.closest('.card');
+      if (e.kind === 'cover') { box.querySelector('.value').firstChild.textContent = t.value; }
+      if (e.kind === 'light') { box.querySelector('.sub').textContent = 'Aan · ' + t.value + ' %'; }
     });
     s.el.addEventListener('change', ev => {
       const t = ev.target; if (!t.classList.contains('slider')) return;
-      const i = +t.closest('figure').dataset.i, e = s.list[i];
+      const r = resolve(s, t), e = r.e;
       if (e.kind === 'cover') e.pos = +t.value;
       if (e.kind === 'light') { e.on = true; e.bri = Math.round(+t.value / 100 * 255); }
-      renderFig(s, i);
+      rerender(s, r);
     });
     s.el.addEventListener('click', ev => {
+      const dot = ev.target.closest('.dot');
+      if (dot) { const t = dot.closest('.swipe').querySelector('.track'); t.scrollTo({ left: +dot.dataset.go * t.clientWidth, behavior: 'smooth' }); return; }
       const b = ev.target.closest('button[data-act]'); if (!b || b.disabled) return;
-      const i = +b.closest('figure').dataset.i, e = s.list[i], a = b.dataset.act;
+      const r = resolve(s, b), e = r.e, a = b.dataset.act;
       if (a === 'preset') e.pos = +b.dataset.v;
       if (a === 'open') e.pos = 100;
       if (a === 'close') e.pos = 0;
@@ -501,7 +547,7 @@ figcaption b { font-weight: 400; }
       if (a === 'dec') e.target = Math.max(e.min, e.target - e.step);
       if (a === 'inc') e.target = Math.min(e.max, e.target + e.step);
       if (a === 'cpreset') { if (b.dataset.v === 'null') e.mode = 'off'; else { e.mode = 'heat'; e.target = +b.dataset.v; } }
-      renderFig(s, i);
+      rerender(s, r);
     });
   });
 
