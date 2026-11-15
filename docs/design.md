@@ -20,7 +20,9 @@ Status: **concept** — het fundament (gesprek 0) is nog niet gebouwd. Open punt
 ## 3. Ontwerp
 - **Stijl:** glas — doorschijnende kaarten met achtergrond-blur, lichte randen en diepte.
 - **Modi:** licht en donker, volgt de systeeminstelling van het apparaat (HA-theme met `modes: light` / `dark`).
-- **Font:** Open Sans (self-hosted variable font) via de bestaande `theme-font-loader.js`.
+- **Font:** Open Sans (self-hosted variable font) via de bestaande `theme-font-loader.js`
+  (`/config/www/theme-font-loader.js`, geladen via `frontend: extra_module_url` in `configuration.yaml`; ook
+  gerefereerd in `themes/bronxx.yaml` en `bright_and_brilliant.yaml`).
 - **Eenheden:** `rem` met 14 px als basis.
 - **Apparaten:** iPhone, iPad, Mac (Safari) en desktop.
 - **Achtergrond:** een aantal subtiele cirkelvormige radiale verlopen die overlopen in de paginakleur; in licht een
@@ -68,7 +70,7 @@ deploy/deploy.sh uitrol naar HA
 - [ ] Glasparameters: blur en transparantie (presets subtiel 12 px / 55 %, middel 20 px / 40 %, sterk 32 px / 25 %)
 - [ ] Radius kaart (6, 10, 14, 18, 22 of 28 px; knopradius afgeleid)
 - [ ] Diepte: alleen rand, alleen schaduw, of rand + schaduw
-- [ ] `theme-font-loader.js` (§3) staat niet in de repo en niet in `www/` van de lokale HA-configkopie: waar staat hij?
+- [ ] Werking van `theme-font-loader.js` (§3) lezen en bepalen hoe `helder.yaml` hem aanstuurt
 - [x] Visuele editor per kaart: ja (zie besluitenlog)
 - [ ] Package manager en Node-versie
 - [ ] Welke HA-pagina's eerst restylen
