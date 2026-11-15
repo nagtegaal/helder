@@ -299,15 +299,22 @@ figcaption b { font-weight: 400; }
 .target .tv small { display: block; font-size: .75rem; font-weight: 400; color: var(--helder-color-text-muted); }
 
 /* swipe-kaart: slides naast elkaar met snap, stipjes eronder */
-.swipe { display: grid; gap: .5rem; min-width: 0; }
+.swipe { display: grid; gap: .5rem; min-width: 0; --bleed-x: 2.2rem; --bleed-top: 1.2rem; --bleed-bottom: 3rem; }
+/* De schuifcontainer knipt alles buiten zijn rand af. Daarom krijgt hij rondom ruimte voor de schaduw
+   (padding) en schuift hij met negatieve marges terug, zodat de kaart op dezelfde plek blijft staan.
+   De tussenruimte is ruim twee keer die rand, zodat de volgende slide niet in beeld piekt. */
 .track {
-  display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: var(--helder-space);
+  display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: calc(var(--bleed-x) * 2.2);
   overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain;
-  padding-bottom: 1.4rem; margin-bottom: -1.4rem;
+  padding: var(--bleed-top) var(--bleed-x) var(--bleed-bottom);
+  margin: calc(var(--bleed-top) * -1) calc(var(--bleed-x) * -1) calc(var(--bleed-bottom) * -1);
+  scroll-padding-inline: var(--bleed-x);
+  pointer-events: none;
 }
+.slide { pointer-events: auto; }
 .track::-webkit-scrollbar { display: none; }
 .slide { scroll-snap-align: start; min-width: 0; }
-.dots { display: flex; justify-content: center; gap: .4rem; position: relative; }
+.dots { display: flex; justify-content: center; gap: .4rem; position: relative; z-index: 1; }
 .dot {
   width: .5rem; height: .5rem; padding: 0; border: 0; border-radius: 999px; cursor: pointer;
   background: var(--helder-color-text-muted); opacity: .4; transition: width .2s ease, opacity .2s ease;
@@ -509,7 +516,8 @@ figcaption b { font-weight: 400; }
   function renderStage(s) {
     s.el.querySelector('.cards').innerHTML = s.list.map((e, i) => `<figure data-i="${i}">${renderers[e.kind](e)}${caption(e)}</figure>`).join('');
     s.el.querySelectorAll('.track').forEach(t => t.addEventListener('scroll', () => {
-      const k = Math.round(t.scrollLeft / t.clientWidth);
+      const sl = t.children, step = sl.length > 1 ? sl[1].offsetLeft - sl[0].offsetLeft : t.clientWidth;
+      const k = Math.round(t.scrollLeft / step);
       t.parentElement.querySelectorAll('.dot').forEach((d, j) => d.setAttribute('aria-current', String(j === k)));
     }, { passive: true }));
   }
@@ -544,7 +552,7 @@ figcaption b { font-weight: 400; }
     });
     s.el.addEventListener('click', ev => {
       const dot = ev.target.closest('.dot');
-      if (dot) { const t = dot.closest('.swipe').querySelector('.track'); t.scrollTo({ left: +dot.dataset.go * t.clientWidth, behavior: 'smooth' }); return; }
+      if (dot) { const t = dot.closest('.swipe').querySelector('.track'); const sl = t.children, step = sl.length > 1 ? sl[1].offsetLeft - sl[0].offsetLeft : t.clientWidth; t.scrollTo({ left: +dot.dataset.go * step, behavior: 'smooth' }); return; }
       const b = ev.target.closest('button[data-act]'); if (!b || b.disabled) return;
       const r = resolve(s, b), e = r.e, a = b.dataset.act;
       if (a === 'preset') e.pos = +b.dataset.v;
