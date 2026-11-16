@@ -1,6 +1,6 @@
 # Helder — specificatie
 
-Status: **concept** — het fundament (gesprek 0) is nog niet gebouwd. Open punten staan onderaan.
+Status: **in aanbouw** — het fundament (gesprek 0) wordt gebouwd. Open punten staan onderaan.
 
 ## 1. Doel en scope
 - Eén ontwerp voor heel Home Assistant: dashboards (eigen kaarten) én HA's eigen pagina's (sidebar, instellingen,
@@ -20,9 +20,9 @@ Status: **concept** — het fundament (gesprek 0) is nog niet gebouwd. Open punt
 ## 3. Ontwerp
 - **Stijl:** glas — doorschijnende kaarten met achtergrond-blur, lichte randen en diepte.
 - **Modi:** licht en donker, volgt de systeeminstelling van het apparaat (HA-theme met `modes: light` / `dark`).
-- **Font:** Open Sans (self-hosted variable font) via de bestaande `theme-font-loader.js`
-  (`/config/www/theme-font-loader.js`, geladen via `frontend: extra_module_url` in `configuration.yaml`; ook
-  gerefereerd in `themes/bronxx.yaml` en `bright_and_brilliant.yaml`).
+- **Font:** Open Sans (self-hosted variable woff2, Latin-subset, met OFL-licentie) in `/config/www/helder/fonts/`.
+  `helder.js` laadt het font zelf (`@font-face` in `document.head`); Helder hangt niet af van de bestaande
+  `theme-font-loader.js` (die blijft voor de andere themes).
 - **Eenheden:** `rem` met 14 px als basis.
 - **Apparaten:** iPhone, iPad, Mac (Safari) en desktop.
 - **Achtergrond:** een aantal subtiele cirkelvormige radiale verlopen die overlopen in de paginakleur; in licht een
@@ -30,7 +30,9 @@ Status: **concept** — het fundament (gesprek 0) is nog niet gebouwd. Open punt
 - **Glas:** Apple-glas: 1 px lichte rand met highlight aan de bovenkant, plus achtergrond-blur.
 - **Kleurgebruik:** per kaart instelbaar in de visuele editor: één accentkleur, of statuskleuren per domein
   (licht aan = amber, verwarmen = oranje, rolluik = accent).
-- Accenttint, blur, transparantie, radius en schaduw: zie open punten (keuze via `mockup/glass.html`).
+- **Standaardwaarden** (allemaal aan te passen op de instellingenpagina): accent oranje `#ff6d00`; verlopen
+  volgen het accent, basiskleur volgt de verlopen; glas middel (blur 20 px, vulling 40 %); glans zacht (0,45);
+  radius 18 px; diepte rand + schaduw; kleurgebruik statuskleur per domein.
 
 ## 4. Architectuur
 ```
@@ -82,15 +84,14 @@ deploy/deploy.sh uitrol naar HA
 | Verlichting / schakelaars (`helder-light-card`, `helder-switch-card`) | gepland | Aan/uit met helderheidsslider |
 
 ## 6. Open punten
-- [ ] Accenttint: blauw, groenblauw, indigo of oranje `#ff6d00` (zie mockup)
-- [ ] Glasparameters: blur en transparantie (presets subtiel 12 px / 55 %, middel 20 px / 40 %, sterk 32 px / 25 %)
-- [ ] Radius kaart (6, 10, 14, 18, 22 of 28 px; knopradius afgeleid)
-- [ ] Diepte: alleen rand, alleen schaduw, of rand + schaduw
-- [ ] Werking van `theme-font-loader.js` (§3) lezen en bepalen hoe `helder.yaml` hem aanstuurt
-- [x] Visuele editor per kaart: ja (zie besluitenlog)
-- [ ] Package manager en Node-versie
-- [ ] Welke HA-pagina's eerst restylen
-- [ ] Indeling kaarten (één kaart per domein of varianten)
+- [x] Accenttint, glas, radius, diepte, glans: standaardwaarden in §3, instelbaar op de instellingenpagina
+- [x] Font: eigen loader in `helder.js` (§3)
+- [x] Visuele editor per kaart: ja
+- [x] Package manager en Node-versie: pnpm, Node 22 LTS
+- [x] HA-pagina's eerst restylen: zijbalk, kopbalk, more-info-dialoog
+- [x] Indeling kaarten: één kaart per domein
+- [ ] `frontend/*_system_data` controleren in de geïnstalleerde HA-versie (2026.11.1)
+- [ ] Blur-prestaties meten op iPhone 12 Pro Max
 
 ## 7. Besluitenlog
 | Datum | Besluit |
@@ -127,4 +128,20 @@ deploy/deploy.sh uitrol naar HA
 | 2026-11-16 | Palet uitgebreid met twaalf lichte kleuren (perzik t/m zand) naast 21 kleuren en 5 grijzen |
 | 2026-11-16 | Vrije kleurkiezer met kleurenwiel, hexveld en voorbeeld in licht en donker |
 | 2026-11-16 | Kleurgebruik in de kaarteditor volgt standaard de instellingenpagina; per kaart te overschrijven |
+| 2026-11-16 | Standaardaccent oranje `#ff6d00`; verlopen volgen standaard het accent, basiskleur volgt de verlopen |
+| 2026-11-16 | Standaardglas middel (blur 20 px, vulling 40 %), glans zacht (0,45), radius 18 px, diepte rand + schaduw |
+| 2026-11-16 | Standaard kleurgebruik: statuskleur per domein |
+| 2026-11-16 | Bezig-staat goedgekeurd: komt in de basisklasse (puls tot HA bevestigt, terugveren + melding bij mislukken) |
+| 2026-11-16 | Eigen container `helder-swipe-card` voor vegen tussen kaarten |
+| 2026-11-16 | pnpm en Node 22 LTS |
+| 2026-11-16 | HA-pagina's restylen in volgorde: zijbalk, kopbalk, more-info-dialoog |
+| 2026-11-16 | Eén kaart per domein (geen varianten per kaart) |
+| 2026-11-16 | Open Sans variable woff2 (Latin) met OFL in `/config/www/helder/fonts/` |
+| 2026-11-16 | Wijzigingen aan `configuration.yaml` (`extra_module_url`, `panel_custom`) alleen na backup en expliciete toestemming |
+| 2026-11-16 | Uitrol via `deploy/deploy.sh` in de Claude Code-app in HA |
+| 2026-11-16 | Standaardtheme mag tijdelijk wisselen (weg van Fluvy) om Helder te testen, na toestemming |
+| 2026-11-16 | Claude beslist voorlopig zoveel mogelijk zelf; eigen besluiten staan hieronder gemarkeerd met *(Claude)* |
+| 2026-11-16 | *(Claude)* `helder.js` laadt Open Sans zelf; geen afhankelijkheid van `theme-font-loader.js` |
+| 2026-11-16 | *(Claude)* De gebouwde bundle (`dist/`) wordt meegecommit, zodat HA kan uitrollen zonder Node |
+| 2026-11-16 | *(Claude)* Instellingen worden toegepast via een geïnjecteerde stylesheet met `!important` op `html`, zodat ze HA's inline theme-variabelen overstijgen |
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |
