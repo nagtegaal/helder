@@ -92,6 +92,45 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
 .stage-title { display: flex; align-items: baseline; gap: .6rem; margin: 0 0 .8rem; font-size: 1.1rem; font-weight: 700; }
 .stage-title span { font-weight: 400; font-size: .9rem; color: var(--helder-color-text-muted); }
 
+/* ---------- Kleurkiezer (deel van de instellingenpagina) ---------- */
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); gap: .5rem 1rem; }
+.slot { display: grid; gap: .25rem; min-width: 0; }
+.slot > span { font-size: .85rem; color: var(--page-muted); }
+.swbtn {
+  font: inherit; font-size: .9rem; display: flex; align-items: center; gap: .55rem; min-width: 0;
+  padding: .4rem .6rem; border-radius: 10px; border: 1px solid var(--page-line); background: transparent; color: var(--page-fg); cursor: pointer; text-align: left;
+}
+.swbtn .sw { width: 1.4rem; height: 1.4rem; flex: none; }
+.swbtn .swname { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.swbtn svg { width: 1rem; height: 1rem; flex: none; color: var(--page-muted); }
+.swbtn:focus-visible { outline: 2px solid var(--page-fg); outline-offset: 2px; }
+.popwrap { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; background: rgba(20, 16, 12, .35); }
+.pop {
+  width: min(30rem, 100%); max-height: calc(100vh - 32px); overflow: auto; display: grid; gap: .9rem;
+  background: var(--page-panel); color: var(--page-fg); border: 1px solid var(--page-line); border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, .3); padding: 1rem 1.1rem 1.1rem;
+}
+.pop h3 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+.pop .grp { display: grid; gap: .35rem; }
+.swgrid { display: grid; grid-template-columns: repeat(auto-fill, 1.9rem); gap: .45rem; }
+.swatch { width: 1.9rem; height: 1.9rem; border-radius: 50%; border: 1px solid rgba(127, 127, 127, .35); cursor: pointer; padding: 0; }
+.swatch[aria-pressed="true"] { outline: 2px solid var(--page-fg); outline-offset: 2px; }
+.swatch:focus-visible { outline: 2px solid var(--page-fg); outline-offset: 2px; }
+.wheelrow { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start; }
+.wheel { width: 10.5rem; height: 10.5rem; position: relative; flex: none; touch-action: none; cursor: crosshair; }
+.wheel canvas { width: 100%; height: 100%; border-radius: 50%; display: block; }
+.wheel .mark { position: absolute; width: 1rem; height: 1rem; margin: -.5rem 0 0 -.5rem; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 1px 3px rgba(0,0,0,.4); pointer-events: none; }
+.wheelside { display: grid; gap: .55rem; flex: 1 1 11rem; min-width: 0; }
+.wheelside label { display: grid; gap: .2rem; font-size: .85rem; color: var(--page-muted); }
+.hexin { font: inherit; font-size: 16px; padding: .35rem .5rem; border-radius: 8px; border: 1px solid var(--page-line); background: var(--page-bg); color: var(--page-fg); width: 100%; }
+.pv { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
+.pvbox { border-radius: 10px; padding: .6rem; display: grid; gap: .45rem; min-height: 4.6rem; align-content: end; }
+.pvbox .pchip { justify-self: start; font-size: .8rem; padding: .25rem .6rem; border-radius: 8px; }
+.pvbox .pbar { height: .4rem; border-radius: 999px; }
+.popbtns { display: flex; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; }
+.popbtns button { font: inherit; font-size: .9rem; padding: .45rem .9rem; border-radius: 999px; border: 1px solid var(--page-line); background: transparent; color: var(--page-fg); cursor: pointer; }
+.popbtns button.primary { background: var(--page-sel); color: var(--page-on-sel); border-color: var(--page-sel); }
+
 /* ---------- Helder-tokens per modus ---------- */
 .stage {
   /* waarden die het paneel zet */
@@ -161,7 +200,7 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
 /* accentkleur: per modus gezet vanuit het paneel (zie ACCENTS in het script) */
 /* achtergrondkleur: los van het accent te kiezen. "Warm" houdt de vaste warme verlopen; anders kleuren de
    verlopen én (licht) de basis mee met --helder-bg-tint. */
-[data-bg="tint"] .stage[data-mode="light"] {
+.stage[data-bg="tint"][data-mode="light"] {
   --helder-color-bg: color-mix(in srgb, var(--helder-bg-tint) 7%, #f8f4f0);
   --helder-bg-blob-1: color-mix(in srgb, var(--helder-bg-tint) 38%, transparent);
   --helder-bg-blob-2: color-mix(in srgb, var(--helder-bg-tint) 26%, transparent);
@@ -169,7 +208,7 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
   --helder-bg-blob-4: color-mix(in srgb, var(--helder-bg-tint) 20%, transparent);
   --helder-bg-blob-5: color-mix(in srgb, var(--helder-bg-tint) 16%, transparent);
 }
-[data-bg="tint"] .stage[data-mode="dark"] {
+.stage[data-bg="tint"][data-mode="dark"] {
   --helder-color-bg: color-mix(in srgb, var(--helder-bg-tint) 8%, #141210);
   --helder-bg-blob-1: color-mix(in srgb, var(--helder-bg-tint) 26%, transparent);
   --helder-bg-blob-2: color-mix(in srgb, var(--helder-bg-tint) 18%, transparent);
@@ -389,7 +428,7 @@ figcaption b { font-weight: 400; }
 @media (prefers-reduced-motion: reduce) { .switch::after { transition: none; } }
 </style>
 
-<div class="wrap" id="app" data-accent="orange" data-colors="domain" data-depth="both" data-bg="tint">
+<div class="wrap" id="app" data-accent="orange" data-colors="domain" data-depth="both">
   <header>
     <h1>Helder glas-mockup</h1>
     <p>Rolluik-, klimaat- en lichtkaart in licht en donker, met echte namen en standen uit Home Assistant. Kies hieronder accent, glas, radius en diepte; de kaarten zijn ook bedienbaar.</p>
@@ -397,20 +436,14 @@ figcaption b { font-weight: 400; }
 
   <section class="panel" aria-label="Instellingen">
     <div class="ctl" style="grid-column: 1 / -1">
-      <span class="lbl">Accentkleur</span>
-      <div class="seg" data-set="accent" data-group="color"></div>
-      <span class="lbl">Grijs</span>
-      <div class="seg" data-set="accent" data-group="grey"></div>
-    </div>
-    <div class="ctl" style="grid-column: 1 / -1">
-      <span class="lbl">Achtergrondkleur (los van het accent)</span>
-      <div class="seg" data-set="bgc" data-group="special">
-        <button data-v="warm"><i class="sw" style="background:linear-gradient(135deg,#ffb078,#f8efe5)"></i>Warm (oorspronkelijk)</button>
-        <button data-v="accent"><i class="sw" style="background:conic-gradient(#ff6d00,#2563eb,#16a34a,#ff6d00)"></i>Zelfde als accent</button>
+      <span class="lbl">Kleuren</span>
+      <div class="slots">
+        <div class="slot"><span>Accentkleur</span><button class="swbtn" data-open="accent" aria-haspopup="dialog"><i class="sw"></i><span class="swname"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg></button></div>
+        <div class="slot"><span>Verlopen, licht</span><button class="swbtn" data-open="bgL" aria-haspopup="dialog"><i class="sw"></i><span class="swname"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg></button></div>
+        <div class="slot"><span>Basiskleur, licht</span><button class="swbtn" data-open="baseL" aria-haspopup="dialog"><i class="sw"></i><span class="swname"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg></button></div>
+        <div class="slot"><span>Verlopen, donker</span><button class="swbtn" data-open="bgD" aria-haspopup="dialog"><i class="sw"></i><span class="swname"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg></button></div>
+        <div class="slot"><span>Basiskleur, donker</span><button class="swbtn" data-open="baseD" aria-haspopup="dialog"><i class="sw"></i><span class="swname"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg></button></div>
       </div>
-      <div class="seg" data-set="bgc" data-group="color"></div>
-      <span class="lbl">Grijs</span>
-      <div class="seg" data-set="bgc" data-group="grey"></div>
     </div>
     <div class="ctl">
       <span class="lbl">Kleurgebruik (optie in de editor)</span>
@@ -468,11 +501,11 @@ figcaption b { font-weight: 400; }
   </section>
 
   <section class="stage" data-mode="light" aria-label="Lichte modus">
-    <h2 class="stage-title">Licht <span>warme lichte achtergrond met cirkelvormige verlopen</span></h2>
+    <h2 class="stage-title">Licht <span>achtergrond volgens de gekozen kleuren</span></h2>
     <div class="cards"></div>
   </section>
   <section class="stage" data-mode="dark" aria-label="Donkere modus">
-    <h2 class="stage-title">Donker <span>dezelfde verlopen op een warme donkere basis</span></h2>
+    <h2 class="stage-title">Donker <span>achtergrond volgens de gekozen kleuren</span></h2>
     <div class="cards"></div>
   </section>
 
@@ -695,6 +728,18 @@ figcaption b { font-weight: 400; }
     ['amber', 'Amber', '#d97706', '#fbbf24', 'color'],
     ['terracotta', 'Terracotta', '#c2410c', '#f0835a', 'color'],
     ['cognac', 'Cognac', '#9a5b2e', '#d0905a', 'color'],
+    ['peach', 'Perzik', '#ffb58a', '#ffc3a0', 'light'],
+    ['apricot', 'Abrikoos', '#ffc976', '#ffd591', 'light'],
+    ['salmon', 'Zalm', '#ff9e8f', '#ffb0a3', 'light'],
+    ['blush', 'Poederroze', '#f7b2c4', '#f9c3d1', 'light'],
+    ['lavender', 'Lavendel', '#b9a8f0', '#c7b9f5', 'light'],
+    ['lilac', 'Lila', '#d3a6e8', '#dcb7ee', 'light'],
+    ['babyblue', 'Babyblauw', '#9cc7f5', '#b0d3f7', 'light'],
+    ['iceblue', 'IJsblauw', '#a6e1ef', '#b8e8f3', 'light'],
+    ['mint', 'Mint', '#9fe0c0', '#b2e7cd', 'light'],
+    ['sage', 'Salie', '#b5c9a1', '#c4d4b3', 'light'],
+    ['lemon', 'Citroen', '#f3e27a', '#f6e992', 'light'],
+    ['sand', 'Zand', '#e3cfaa', '#e9d9bb', 'light'],
     ['graphite', 'Grafiet', '#3f3f46', '#d4d4d8', 'grey'],
     ['anthracite', 'Antraciet', '#27272a', '#e4e4e7', 'grey'],
     ['slate', 'Leisteen', '#475569', '#a8b6c9', 'grey'],
@@ -703,33 +748,75 @@ figcaption b { font-weight: 400; }
   ];
   const lum = hex => { const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
   const onAccent = hex => lum(hex) > .4 ? '#1c1814' : '#ffffff';
-  document.querySelectorAll('[data-set="accent"], [data-set="bgc"]:not([data-group="special"])').forEach(g => {
-    g.innerHTML = ACCENTS.filter(a => a[4] === g.dataset.group).map(([id, n, l]) => `<button data-v="${id}"><i class="sw" style="background:${l}"></i>${n}</button>`).join('');
-  });
+  // Kleurwaarden: een id uit ACCENTS, een eigen kleur '#rrggbb', of een speciale waarde per vak.
+  const hexToRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const rgbToHex = c => '#' + c.map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
+  const mix = (h, t, to = [255, 255, 255]) => rgbToHex(hexToRgb(h).map((v, i) => v + (to[i] - v) * t));
+  function hsvToHex(hh, ss, vv) {
+    const f = n => { const k = (n + hh / 60) % 6; return vv - vv * ss * Math.max(0, Math.min(k, 4 - k, 1)); };
+    return rgbToHex([f(5), f(3), f(1)].map(x => x * 255));
+  }
+  function hexToHsv(h) {
+    const [r, g, b] = hexToRgb(h).map(x => x / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    let hh = 0;
+    if (d) hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return [(hh * 60 + 360) % 360, mx ? d / mx : 0, mx];
+  }
+  const isHex = v => /^#[0-9a-f]{6}$/i.test(v);
+  // Eigen kleur: in donker wordt een donkere kleur iets lichter, zodat hij op de donkere basis leesbaar blijft.
+  function hexOf(v, mode) {
+    if (isHex(v)) return mode === 'dark' && lum(v) < .18 ? mix(v, .22) : v.toLowerCase();
+    const a = ACCENTS.find(x => x[0] === v) || ACCENTS[0];
+    return mode === 'dark' ? a[3] : a[2];
+  }
+  const WARM_BASE = { light: '#f8efe5', dark: '#16110d' };
+  const SPECIAL = {
+    accent: [],
+    bg: [['warm', 'Warm (oorspronkelijk)', 'linear-gradient(135deg,#ffb078,#f8efe5)'], ['accent', 'Zelfde als accent', 'conic-gradient(#ff6d00,#2563eb,#16a34a,#ff6d00)']],
+    base: [['follow', 'Volgt de verlopen', 'linear-gradient(135deg,#ddd,#fff)'], ['warm', 'Warm (oorspronkelijk)', 'linear-gradient(135deg,#ffb078,#f8efe5)']]
+  };
+  const slotKind = k => k === 'accent' ? 'accent' : k.startsWith('bg') ? 'bg' : 'base';
+  const slotMode = k => k.endsWith('D') ? 'dark' : 'light';
+  const SLOTNAMES = { accent: 'Accentkleur', bgL: 'Verlopen, licht', baseL: 'Basiskleur, licht', bgD: 'Verlopen, donker', baseD: 'Basiskleur, donker' };
+  function describe(k, v) {
+    const sp = SPECIAL[slotKind(k)].find(x => x[0] === v);
+    if (sp) return { name: sp[1], bg: sp[2] };
+    if (isHex(v)) return { name: 'Eigen kleur ' + v.toLowerCase(), bg: v };
+    const a = ACCENTS.find(x => x[0] === v) || ACCENTS[0];
+    return { name: a[1], bg: slotMode(k) === 'dark' ? a[3] : a[2] };
+  }
 
   // ---------- Bedieningspaneel ----------
   const glassPresets = { subtle: [12, 55], medium: [20, 40], strong: [32, 25] };
   const radii = [6, 10, 14, 18, 22, 28];
-  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211, bgc: 'accent', gloss: 0.45, rt: 'off', outcome: 'ok' };
-  try { Object.assign(st, JSON.parse(localStorage.getItem('helder-mockup') || '{}')); } catch (_) {}
+  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211, bgL: 'accent', baseL: 'follow', bgD: 'accent', baseD: 'follow', gloss: 0.45, rt: 'off', outcome: 'ok' };
+  try { const saved = JSON.parse(localStorage.getItem('helder-mockup') || '{}'); if (saved.bgc) { saved.bgL = saved.bgD = saved.bgc; delete saved.bgc; } delete saved.bg; Object.assign(st, saved); } catch (_) {}
 
   document.querySelector('[data-set="radius"]').innerHTML = radii.map(r => `<button data-v="${r}" style="--r:${r}px">${r} px</button>`).join('');
   const blur = document.getElementById('blur'), fill = document.getElementById('fill');
 
   function apply() {
-    app.dataset.accent = st.accent; app.dataset.colors = st.colors; app.dataset.depth = st.depth; app.dataset.bg = st.bgc === 'warm' ? 'warm' : 'tint'; app.dataset.rt = st.rt;
+    app.dataset.accent = st.accent; app.dataset.colors = st.colors; app.dataset.depth = st.depth; app.dataset.rt = st.rt;
     stages.forEach(s => {
       s.el.style.setProperty('--glass-blur', st.blur + 'px');
       s.el.style.setProperty('--glass-alpha', st.fill / 100);
-      const ac = ACCENTS.find(a => a[0] === st.accent) || ACCENTS[0];
-      const hex = s.el.dataset.mode === 'dark' ? ac[3] : ac[2];
+      const mode = s.el.dataset.mode, M = mode === 'dark' ? 'D' : 'L';
+      const hex = hexOf(st.accent, mode);
       s.el.style.setProperty('--helder-color-accent', hex);
       s.el.style.setProperty('--helder-color-on-accent', onAccent(hex));
-      const bc = st.bgc === 'accent' ? ac : (ACCENTS.find(a => a[0] === st.bgc) || ac);
-      s.el.style.setProperty('--helder-bg-tint', s.el.dataset.mode === 'dark' ? bc[3] : bc[2]);
+      const bgv = st['bg' + M], basev = st['base' + M];
+      s.el.dataset.bg = bgv === 'warm' ? 'warm' : 'tint';
+      s.el.style.setProperty('--helder-bg-tint', bgv === 'accent' ? hex : bgv === 'warm' ? WARM_BASE[mode] : hexOf(bgv, mode));
+      if (basev === 'follow') s.el.style.removeProperty('--helder-color-bg');
+      else if (basev === 'warm') s.el.style.setProperty('--helder-color-bg', WARM_BASE[mode]);
+      else s.el.style.setProperty('--helder-color-bg', `color-mix(in srgb, ${hexOf(basev, mode)} ${mode === 'dark' ? 14 : 18}%, ${mode === 'dark' ? '#141210' : '#f8f4f0'})`);
       s.el.style.setProperty('--r', st.radius + 'px');
       s.el.style.setProperty('--gloss', st.gloss);
       s.el.style.setProperty('--card-w', st.width + 'px');
+    });
+    document.querySelectorAll('.swbtn').forEach(b => {
+      const d = describe(b.dataset.open, st[b.dataset.open]);
+      b.querySelector('.sw').style.background = d.bg; b.querySelector('.swname').textContent = d.name;
     });
     blur.value = st.blur; fill.value = st.fill;
     document.getElementById('blurOut').textContent = st.blur + ' px';
@@ -749,6 +836,82 @@ figcaption b { font-weight: 400; }
   }));
   blur.addEventListener('input', () => { st.blur = +blur.value; st.glass = ''; apply(); });
   fill.addEventListener('input', () => { st.fill = +fill.value; st.glass = ''; apply(); });
+  // ---------- Kleurkiezer: vaste kleuren, lichte kleuren, grijs en een eigen kleur via het kleurenwiel ----------
+  let pop = null;
+  function openPicker(k) {
+    const kind = slotKind(k), mode = slotMode(k);
+    const cur = st[k];
+    let [hh, ss, vv] = hexToHsv(isHex(cur) ? cur : (SPECIAL[kind].some(x => x[0] === cur) ? hexOf(st.accent, 'light') : hexOf(cur, 'light')));
+    const groups = [['color', 'Kleuren'], ['light', 'Licht'], ['grey', 'Grijs']];
+    const wrap = document.createElement('div');
+    wrap.className = 'popwrap';
+    wrap.innerHTML = `<div class="pop" role="dialog" aria-modal="true" aria-label="${SLOTNAMES[k]}">
+      <h3>${SLOTNAMES[k]}</h3>
+      ${SPECIAL[kind].length ? `<div class="seg">${SPECIAL[kind].map(([v, n, bg]) => `<button data-pick="${v}" aria-pressed="${cur === v}"><i class="sw" style="background:${bg}"></i>${n}</button>`).join('')}</div>` : ''}
+      ${groups.map(([g, n]) => `<div class="grp"><span class="lbl">${n}</span><div class="swgrid">${ACCENTS.filter(a => a[4] === g).map(a => `<button class="swatch" data-pick="${a[0]}" title="${a[1]}" aria-label="${a[1]}" aria-pressed="${cur === a[0]}" style="background:${mode === 'dark' ? a[3] : a[2]}"></button>`).join('')}</div></div>`).join('')}
+      <div class="grp"><span class="lbl">Eigen kleur</span>
+        <div class="wheelrow">
+          <div class="wheel" aria-label="Kleurenwiel"><canvas width="336" height="336"></canvas><span class="mark"></span></div>
+          <div class="wheelside">
+            <label>Helderheid <input class="rng" type="range" min="10" max="100" step="1" data-v-slider></label>
+            <label>Hex <input class="hexin" type="text" inputmode="text" maxlength="7" spellcheck="false" aria-label="Hexcode"></label>
+            <div class="pv">
+              <div class="pvbox" data-pv="light"><span class="pchip">Actief</span><span class="pbar"></span></div>
+              <div class="pvbox" data-pv="dark"><span class="pchip">Actief</span><span class="pbar"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="popbtns"><button data-close>Sluiten</button><button class="primary" data-apply>Eigen kleur toepassen</button></div>
+    </div>`;
+    document.body.appendChild(wrap); pop = wrap;
+    const cv = wrap.querySelector('canvas'), ctx = cv.getContext('2d'), mark = wrap.querySelector('.mark');
+    const vs = wrap.querySelector('[data-v-slider]'), hexIn = wrap.querySelector('.hexin');
+    function drawWheel() {
+      const n = cv.width, r = n / 2, img = ctx.createImageData(n, n);
+      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+        const dx = x - r, dy = y - r, d = Math.sqrt(dx * dx + dy * dy), i = (y * n + x) * 4;
+        if (d > r) { img.data[i + 3] = 0; continue; }
+        const c = hexToRgb(hsvToHex((Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360, d / r, vv));
+        img.data[i] = c[0]; img.data[i + 1] = c[1]; img.data[i + 2] = c[2]; img.data[i + 3] = 255;
+      }
+      ctx.putImageData(img, 0, 0);
+    }
+    function sync(fromHex) {
+      const h = hsvToHex(hh, ss, vv);
+      const a = hh * Math.PI / 180;
+      mark.style.left = (50 + Math.cos(a) * ss * 50) + '%'; mark.style.top = (50 + Math.sin(a) * ss * 50) + '%';
+      mark.style.background = h; vs.value = Math.round(vv * 100);
+      if (!fromHex) hexIn.value = h;
+      wrap.querySelectorAll('.pvbox').forEach(b => {
+        const m = b.dataset.pv, c = kind === 'accent' ? hexOf(h, m) : h;
+        b.style.background = `radial-gradient(circle at 25% 15%, ${c}${kind === 'accent' ? '33' : '99'} 0, transparent 65%), ${m === 'dark' ? WARM_BASE.dark : '#f8f4f0'}`;
+        b.querySelector('.pchip').style.cssText = `background:${c};color:${onAccent(c)}`;
+        b.querySelector('.pbar').style.background = `linear-gradient(to right, ${c} 0 60%, ${m === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(90,60,30,.12)'} 60%)`;
+      });
+    }
+    function pickAt(ev) {
+      const rc = cv.getBoundingClientRect(), dx = ev.clientX - rc.left - rc.width / 2, dy = ev.clientY - rc.top - rc.height / 2;
+      hh = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360; ss = Math.min(1, Math.sqrt(dx * dx + dy * dy) / (rc.width / 2)); sync();
+    }
+    const wheel = wrap.querySelector('.wheel');
+    wheel.addEventListener('pointerdown', ev => { wheel.setPointerCapture(ev.pointerId); pickAt(ev); });
+    wheel.addEventListener('pointermove', ev => { if (wheel.hasPointerCapture(ev.pointerId)) pickAt(ev); });
+    vs.addEventListener('input', () => { vv = +vs.value / 100; drawWheel(); sync(); });
+    hexIn.addEventListener('input', () => { const v = hexIn.value.trim(); if (isHex(v)) { [hh, ss, vv] = hexToHsv(v); drawWheel(); sync(true); } });
+    const close = () => { wrap.remove(); pop = null; document.querySelector(`.swbtn[data-open="${k}"]`).focus(); };
+    wrap.addEventListener('click', ev => {
+      if (ev.target === wrap || ev.target.closest('[data-close]')) return close();
+      const pk = ev.target.closest('[data-pick]');
+      if (pk) { st[k] = pk.dataset.pick; apply(); wrap.querySelectorAll('[data-pick]').forEach(b => b.setAttribute('aria-pressed', String(b === pk))); return; }
+      if (ev.target.closest('[data-apply]')) { st[k] = hsvToHex(hh, ss, vv); apply(); close(); }
+    });
+    wrap.addEventListener('keydown', ev => { if (ev.key === 'Escape') close(); });
+    drawWheel(); sync();
+    wrap.querySelector('button').focus();
+  }
+  document.querySelectorAll('.swbtn').forEach(b => b.addEventListener('click', () => openPicker(b.dataset.open)));
+
   // Voor screenshots: #width=360 enz. overschrijft de opgeslagen keuze.
   for (const [k, v] of new URLSearchParams(location.hash.slice(1))) {
     if (k in st) { st[k] = isNaN(+v) ? v : +v; if (k === 'glass') [st.blur, st.fill] = glassPresets[v]; }

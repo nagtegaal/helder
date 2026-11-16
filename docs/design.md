@@ -38,6 +38,7 @@ src/
   tokens/        tokens.ts (licht/donker) → build genereert themes/helder.yaml én de CSS-variabelen
   core/          base-card.ts (basisklasse), entity.ts, actions.ts, format.ts, register.ts
   ui/            gedeelde onderdelen (head, readout, toggle, slider, …) + styles/*.css
+  settings/      instellingenpagina (panel_custom) + opslag en live toepassen van de thema-instellingen
   shell/         restyling van HA's eigen pagina's
   cards/<naam>/  <naam>-card.ts (+ onderdelen)
   index.ts       entry: registreert kaarten en shell
@@ -46,6 +47,21 @@ deploy/deploy.sh uitrol naar HA
 ```
 - TypeScript + Lit 3 (meegebundeld, niet die van HA lenen), Vite, één ES-module `helder.js`.
 - Build draait in de Claude-werkomgeving; uitrol via `deploy.sh` in de Claude Code-app in HA.
+
+### Instellingenpagina
+- Eigen pagina "Helder" in de zijbalk via `panel_custom` in `configuration.yaml` (geen Python-integratie);
+  het element zit in `helder.js`. Alleen zichtbaar voor admins (`require_admin: true`).
+- Opslag centraal voor alle gebruikers en apparaten via HA's frontend-opslag: `frontend/set_system_data`
+  (alleen admin), `frontend/get_system_data` en `frontend/subscribe_system_data` (iedereen), sleutel `helder`.
+  Bron: `homeassistant/components/frontend/storage.py` (dev-branch, nog te controleren in de geïnstalleerde versie).
+- De bundle leest de instellingen bij het laden, abonneert zich op wijzigingen en zet de waarden live als
+  `--helder-*`-variabelen. `themes/helder.yaml` bevat de standaardwaarden, zodat alles ook zonder opgeslagen
+  instellingen werkt.
+- Instelbaar: accentkleur, verloopkleur en basiskleur (elk apart voor licht en donker), glas (blur, vulling),
+  glans, radius, diepte, standaard kleurgebruik, verminderde transparantie. Kleuren uit het vaste palet
+  (kleuren, licht, grijs) of een eigen kleur via kleurenwiel met hexveld en voorbeeld in licht en donker.
+- Het kleurgebruik in de kaarteditor staat standaard op de waarde van de instellingenpagina; een kaart kan
+  daarvan afwijken.
 
 ### Contract van de basisklasse
 - Levert `hass`, `config`, gemeten breedte, entity-resolutie, acties (`tap`/`hold`, standaard more-info), formattering.
@@ -103,4 +119,12 @@ deploy/deploy.sh uitrol naar HA
 | 2026-11-15 | Bezig-staat (pulserende waarde tot HA bevestigt, terugveren bij mislukken): eerst los voorbeeld in de mockup, nog niet besloten |
 | 2026-11-15 | Rolluikkaart op smalle breedte (152 px): presets als één knop met keuzemenu, met zichtbaar pijltje en rand zodat het meteen als dropdown herkenbaar is |
 | 2026-11-15 | Prestaties blur later meten op het oudste apparaat (iPhone 12 Pro Max); iPad is niet oud |
+| 2026-11-16 | Alle thema-instellingen worden configureerbaar op een eigen instellingenpagina in HA (fundament, deze thread) |
+| 2026-11-16 | Instellingen gelden centraal voor alle gebruikers en apparaten |
+| 2026-11-16 | Alleen admins zien en wijzigen de instellingenpagina |
+| 2026-11-16 | Accentkleur en achtergrondkleur los en onafhankelijk van elkaar te kiezen uit alle kleuren |
+| 2026-11-16 | Achtergrond: verloopkleur en basiskleur allebei instelbaar, elk apart voor licht en donker |
+| 2026-11-16 | Palet uitgebreid met twaalf lichte kleuren (perzik t/m zand) naast 21 kleuren en 5 grijzen |
+| 2026-11-16 | Vrije kleurkiezer met kleurenwiel, hexveld en voorbeeld in licht en donker |
+| 2026-11-16 | Kleurgebruik in de kaarteditor volgt standaard de instellingenpagina; per kaart te overschrijven |
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |
