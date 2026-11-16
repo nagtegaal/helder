@@ -63,7 +63,7 @@ deploy/          deploy.sh (uitrol naar HA met backup) + configuration.yaml.snip
   het element zit in `helder.js`. Alleen zichtbaar voor admins (`require_admin: true`).
 - Opslag centraal voor alle gebruikers en apparaten via HA's frontend-opslag: `frontend/set_system_data`
   (alleen admin), `frontend/get_system_data` en `frontend/subscribe_system_data` (iedereen), sleutel `helder`.
-  Bron: `homeassistant/components/frontend/storage.py` (dev-branch, nog te controleren in de geïnstalleerde versie).
+  Bron: `homeassistant/components/frontend/storage.py` (gecontroleerd in 2026.11.1).
 - De bundle leest de instellingen bij het laden, abonneert zich op wijzigingen en zet de waarden live als
   `--helder-*`-variabelen. `themes/helder.yaml` bevat de standaardwaarden, zodat alles ook zonder opgeslagen
   instellingen werkt.
@@ -101,8 +101,10 @@ deploy/          deploy.sh (uitrol naar HA met backup) + configuration.yaml.snip
 - [x] Package manager en Node-versie: pnpm, Node 22 LTS
 - [x] HA-pagina's eerst restylen: zijbalk, kopbalk, more-info-dialoog
 - [x] Indeling kaarten: één kaart per domein
-- [ ] `frontend/*_system_data` controleren in de geïnstalleerde HA-versie (2026.11.1)
+- [x] `frontend/*_system_data` bestaat in HA 2026.11.1 (gecontroleerd in `frontend/storage.py` van die tag)
 - [ ] Blur-prestaties meten op iPhone 12 Pro Max
+- [ ] Eerste uitrol in HA (backup, `configuration.yaml`, herstart): wacht op toestemming
+- [ ] Shell: zijbalk, kopbalk, more-info-dialoog restylen
 
 ## 7. Besluitenlog
 | Datum | Besluit |
