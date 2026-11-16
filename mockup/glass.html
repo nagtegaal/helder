@@ -159,20 +159,23 @@ header p { margin: .3rem 0 0; color: var(--page-muted); max-width: 60ch; }
   --helder-color-error: #ff6b6b;
 }
 /* accentkleur: per modus gezet vanuit het paneel (zie ACCENTS in het script) */
-/* tijdelijk: achtergrondverlopen volgen de accentkleur */
-[data-bg="accent"] .stage[data-mode="light"] {
-  --helder-bg-blob-1: color-mix(in srgb, var(--helder-color-accent) 38%, transparent);
-  --helder-bg-blob-2: color-mix(in srgb, var(--helder-color-accent) 26%, transparent);
-  --helder-bg-blob-3: color-mix(in srgb, var(--helder-color-accent) 32%, transparent);
-  --helder-bg-blob-4: color-mix(in srgb, var(--helder-color-accent) 20%, transparent);
-  --helder-bg-blob-5: color-mix(in srgb, var(--helder-color-accent) 16%, transparent);
+/* achtergrondkleur: los van het accent te kiezen. "Warm" houdt de vaste warme verlopen; anders kleuren de
+   verlopen én (licht) de basis mee met --helder-bg-tint. */
+[data-bg="tint"] .stage[data-mode="light"] {
+  --helder-color-bg: color-mix(in srgb, var(--helder-bg-tint) 7%, #f8f4f0);
+  --helder-bg-blob-1: color-mix(in srgb, var(--helder-bg-tint) 38%, transparent);
+  --helder-bg-blob-2: color-mix(in srgb, var(--helder-bg-tint) 26%, transparent);
+  --helder-bg-blob-3: color-mix(in srgb, var(--helder-bg-tint) 32%, transparent);
+  --helder-bg-blob-4: color-mix(in srgb, var(--helder-bg-tint) 20%, transparent);
+  --helder-bg-blob-5: color-mix(in srgb, var(--helder-bg-tint) 16%, transparent);
 }
-[data-bg="accent"] .stage[data-mode="dark"] {
-  --helder-bg-blob-1: color-mix(in srgb, var(--helder-color-accent) 26%, transparent);
-  --helder-bg-blob-2: color-mix(in srgb, var(--helder-color-accent) 18%, transparent);
-  --helder-bg-blob-3: color-mix(in srgb, var(--helder-color-accent) 22%, transparent);
-  --helder-bg-blob-4: color-mix(in srgb, var(--helder-color-accent) 15%, transparent);
-  --helder-bg-blob-5: color-mix(in srgb, var(--helder-color-accent) 10%, transparent);
+[data-bg="tint"] .stage[data-mode="dark"] {
+  --helder-color-bg: color-mix(in srgb, var(--helder-bg-tint) 8%, #141210);
+  --helder-bg-blob-1: color-mix(in srgb, var(--helder-bg-tint) 26%, transparent);
+  --helder-bg-blob-2: color-mix(in srgb, var(--helder-bg-tint) 18%, transparent);
+  --helder-bg-blob-3: color-mix(in srgb, var(--helder-bg-tint) 22%, transparent);
+  --helder-bg-blob-4: color-mix(in srgb, var(--helder-bg-tint) 15%, transparent);
+  --helder-bg-blob-5: color-mix(in srgb, var(--helder-bg-tint) 10%, transparent);
 }
 .stage { --helder-color-on-accent: #ffffff; }
 
@@ -386,7 +389,7 @@ figcaption b { font-weight: 400; }
 @media (prefers-reduced-motion: reduce) { .switch::after { transition: none; } }
 </style>
 
-<div class="wrap" id="app" data-accent="orange" data-colors="domain" data-depth="both" data-bg="accent">
+<div class="wrap" id="app" data-accent="orange" data-colors="domain" data-depth="both" data-bg="tint">
   <header>
     <h1>Helder glas-mockup</h1>
     <p>Rolluik-, klimaat- en lichtkaart in licht en donker, met echte namen en standen uit Home Assistant. Kies hieronder accent, glas, radius en diepte; de kaarten zijn ook bedienbaar.</p>
@@ -399,18 +402,21 @@ figcaption b { font-weight: 400; }
       <span class="lbl">Grijs</span>
       <div class="seg" data-set="accent" data-group="grey"></div>
     </div>
+    <div class="ctl" style="grid-column: 1 / -1">
+      <span class="lbl">Achtergrondkleur (los van het accent)</span>
+      <div class="seg" data-set="bgc" data-group="special">
+        <button data-v="warm"><i class="sw" style="background:linear-gradient(135deg,#ffb078,#f8efe5)"></i>Warm (oorspronkelijk)</button>
+        <button data-v="accent"><i class="sw" style="background:conic-gradient(#ff6d00,#2563eb,#16a34a,#ff6d00)"></i>Zelfde als accent</button>
+      </div>
+      <div class="seg" data-set="bgc" data-group="color"></div>
+      <span class="lbl">Grijs</span>
+      <div class="seg" data-set="bgc" data-group="grey"></div>
+    </div>
     <div class="ctl">
       <span class="lbl">Kleurgebruik (optie in de editor)</span>
       <div class="seg" data-set="colors">
         <button data-v="accent">Eén accent</button>
         <button data-v="domain">Statuskleur per domein</button>
-      </div>
-    </div>
-    <div class="ctl">
-      <span class="lbl">Achtergrondverlopen (tijdelijk)</span>
-      <div class="seg" data-set="bg">
-        <button data-v="accent">Volgen accent</button>
-        <button data-v="warm">Warm, vast</button>
       </div>
     </div>
     <div class="ctl">
@@ -697,21 +703,21 @@ figcaption b { font-weight: 400; }
   ];
   const lum = hex => { const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
   const onAccent = hex => lum(hex) > .4 ? '#1c1814' : '#ffffff';
-  document.querySelectorAll('[data-set="accent"]').forEach(g => {
+  document.querySelectorAll('[data-set="accent"], [data-set="bgc"]:not([data-group="special"])').forEach(g => {
     g.innerHTML = ACCENTS.filter(a => a[4] === g.dataset.group).map(([id, n, l]) => `<button data-v="${id}"><i class="sw" style="background:${l}"></i>${n}</button>`).join('');
   });
 
   // ---------- Bedieningspaneel ----------
   const glassPresets = { subtle: [12, 55], medium: [20, 40], strong: [32, 25] };
   const radii = [6, 10, 14, 18, 22, 28];
-  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211, bg: 'accent', gloss: 0.45, rt: 'off', outcome: 'ok' };
+  const st = { accent: 'orange', colors: 'domain', glass: 'medium', blur: 20, fill: 40, radius: 18, depth: 'both', width: 211, bgc: 'accent', gloss: 0.45, rt: 'off', outcome: 'ok' };
   try { Object.assign(st, JSON.parse(localStorage.getItem('helder-mockup') || '{}')); } catch (_) {}
 
   document.querySelector('[data-set="radius"]').innerHTML = radii.map(r => `<button data-v="${r}" style="--r:${r}px">${r} px</button>`).join('');
   const blur = document.getElementById('blur'), fill = document.getElementById('fill');
 
   function apply() {
-    app.dataset.accent = st.accent; app.dataset.colors = st.colors; app.dataset.depth = st.depth; app.dataset.bg = st.bg; app.dataset.rt = st.rt;
+    app.dataset.accent = st.accent; app.dataset.colors = st.colors; app.dataset.depth = st.depth; app.dataset.bg = st.bgc === 'warm' ? 'warm' : 'tint'; app.dataset.rt = st.rt;
     stages.forEach(s => {
       s.el.style.setProperty('--glass-blur', st.blur + 'px');
       s.el.style.setProperty('--glass-alpha', st.fill / 100);
@@ -719,6 +725,8 @@ figcaption b { font-weight: 400; }
       const hex = s.el.dataset.mode === 'dark' ? ac[3] : ac[2];
       s.el.style.setProperty('--helder-color-accent', hex);
       s.el.style.setProperty('--helder-color-on-accent', onAccent(hex));
+      const bc = st.bgc === 'accent' ? ac : (ACCENTS.find(a => a[0] === st.bgc) || ac);
+      s.el.style.setProperty('--helder-bg-tint', s.el.dataset.mode === 'dark' ? bc[3] : bc[2]);
       s.el.style.setProperty('--r', st.radius + 'px');
       s.el.style.setProperty('--gloss', st.gloss);
       s.el.style.setProperty('--card-w', st.width + 'px');
