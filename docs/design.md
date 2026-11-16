@@ -44,11 +44,19 @@ src/
   shell/         restyling van HA's eigen pagina's
   cards/<naam>/  <naam>-card.ts (+ onderdelen)
   index.ts       entry: registreert kaarten en shell
+dev/             testomgeving met nep-HA (harness.html, fake-ha.ts, demo-card.ts; niet in de bundle)
+scripts/         gen-theme.ts (themes/helder.yaml uit de tokens), postbuild.ts
 docs/design.md   deze specificatie
-deploy/deploy.sh uitrol naar HA
+deploy/          deploy.sh (uitrol naar HA met backup) + configuration.yaml.snippet
 ```
 - TypeScript + Lit 3 (meegebundeld, niet die van HA lenen), Vite, één ES-module `helder.js`.
 - Build draait in de Claude-werkomgeving; uitrol via `deploy.sh` in de Claude Code-app in HA.
+- `dist/helder.js` is een kleine vaste loader die `helder.<hash>.js` importeert: `extra_module_url` en
+  `panel_custom` hoeven nooit te veranderen en een browser draait nooit een verouderde bundle.
+- `computeTokens(settings, mode)` in `src/tokens/tokens.ts` is de enige bron van alle `--helder-*`-waarden: de
+  build maakt er `themes/helder.yaml` (standaardwaarden) van, de bundle past er live de opgeslagen instellingen mee
+  toe (stylesheet met `!important` op `html`). HA's eigen variabelen (primaire kleur, kaartachtergrond, pagina-
+  achtergrond, font) worden alleen overschreven zolang het theme `helder` actief is (marker `--helder-theme-active`).
 
 ### Instellingenpagina
 - Eigen pagina "Helder" in de zijbalk via `panel_custom` in `configuration.yaml` (geen Python-integratie);
@@ -72,7 +80,10 @@ deploy/deploy.sh uitrol naar HA
 - `getStubConfig()` voor de kaartkiezer; registratie in `window.customCards`.
 - Staten: `unavailable`, `unknown` en ontbrekend veranderen nooit grootte of opbouw — waarden tonen `—`, bediening
   uitgeschakeld, alleen kleuren wijzigen. Attributen kunnen `null` of afwezig zijn.
-- Optimistische UI: eerst de weergave, dan de service-call; sliders versturen bij loslaten.
+- Optimistische UI via `perform(key, value, call)` + `pendingValue(key, actual)`: de nieuwe waarde staat direct
+  in beeld en pulseert tot HA de entity bijwerkt (max. 15 s); bij een fout veert hij terug, schudt de kaart en toont
+  de tweede regel 2,5 s "Mislukt, teruggezet". Sliders versturen bij loslaten.
+- Kaarteditor via `HelderBaseEditor` (HA's `ha-form`); het veld Kleurgebruik zit er automatisch in.
 - Breedte: werkt van 152 px (halve sectie) tot 520 px zonder afkappen; geen vaste breedtes.
 - Alleen tokens (`var(--helder-*)`), nooit literal kleuren.
 
@@ -144,4 +155,8 @@ deploy/deploy.sh uitrol naar HA
 | 2026-11-16 | *(Claude)* `helder.js` laadt Open Sans zelf; geen afhankelijkheid van `theme-font-loader.js` |
 | 2026-11-16 | *(Claude)* De gebouwde bundle (`dist/`) wordt meegecommit, zodat HA kan uitrollen zonder Node |
 | 2026-11-16 | *(Claude)* Instellingen worden toegepast via een geïnjecteerde stylesheet met `!important` op `html`, zodat ze HA's inline theme-variabelen overstijgen |
+| 2026-11-16 | *(Claude)* Instellingenpagina werkt met een concept + live voorbeeld; pas "Opslaan" zet het voor iedereen door |
+| 2026-11-16 | *(Claude)* Vaste loader `helder.js` die een bundle met contenthash importeert (geen `?v=` in `configuration.yaml`) |
+| 2026-11-16 | *(Claude)* `deploy.sh` wijzigt `configuration.yaml` nooit; het controleert en toont de benodigde regels |
+| 2026-11-16 | *(Claude)* `helder-swipe-card` wordt gebouwd in een eigen kaartgesprek, niet in het fundament |
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |
