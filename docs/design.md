@@ -93,6 +93,7 @@ deploy/          deploy.sh (uitrol naar HA met backup) + configuration.yaml.snip
 | Rolluiken (`helder-cover-card`) | gepland | Brel/MotionBlinds; entity-ids `cover.rolluik_<beneden\|boven>_<voorzijde\|achterzijde>_…`. Naam, positie in %, horizontale slider, knoppen open/stop/dicht, presets (naam + positie, bijv. Gesloten 0 %, Ventileren 10 %, Halfopen 50 %, Open 100 %) instelbaar in de visuele editor |
 | Klimaat (`helder-climate-card`) | gepland | Huidige temperatuur, doeltemperatuur met −/+, modus. Presets (label + temperatuur, bijv. Uit, Eco 16 °C, Comfort 19 °C) instelbaar in de visuele editor |
 | Verlichting / schakelaars (`helder-light-card`, `helder-switch-card`) | gepland | Aan/uit met helderheidsslider |
+| Swipe (`helder-swipe-card`) | gebouwd, nog niet uitgerold | Container: één kaart tegelijk; vegen of op een puntje tikken draait de kaart om (flip om de verticale as) naar de volgende/vorige. Puntjes onderaan tonen actieve kaart en aantal. Config `cards` (zelfde vorm als HA's stapelkaart; editor = HA's stapelkaart-editor) |
 
 ## 6. Open punten
 - [x] Accenttint, glas, radius, diepte, glans: standaardwaarden in §3, instelbaar op de instellingenpagina
@@ -102,7 +103,7 @@ deploy/          deploy.sh (uitrol naar HA met backup) + configuration.yaml.snip
 - [x] HA-pagina's eerst restylen: zijbalk, kopbalk, more-info-dialoog
 - [x] Indeling kaarten: één kaart per domein
 - [x] `frontend/*_system_data` bestaat in HA 2026.11.1 (gecontroleerd in `frontend/storage.py` van die tag)
-- [ ] Blur-prestaties meten op iPhone 12 Pro Max
+- [ ] Blur-prestaties meten op iPhone 12 Pro Max (ook de flip van de swipe-kaart: glas in een 3D-transform)
 - [ ] Eerste uitrol in HA (backup, `configuration.yaml`, herstart): wacht op toestemming
 - [ ] Shell: zijbalk, kopbalk, more-info-dialoog restylen
 
@@ -162,3 +163,11 @@ deploy/          deploy.sh (uitrol naar HA met backup) + configuration.yaml.snip
 | 2026-11-16 | *(Claude)* `deploy.sh` wijzigt `configuration.yaml` nooit; het controleert en toont de benodigde regels |
 | 2026-11-16 | *(Claude)* `helder-swipe-card` wordt gebouwd in een eigen kaartgesprek, niet in het fundament |
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |
+| 2026-11-17 | Swipe-kaart: bij vegen draait de kaart geanimeerd om naar de volgende of vorige kaart; de puntjes onderaan (actieve kaart + aantal) blijven |
+| 2026-11-17 | *(Claude)* Flip in twee helften (0° → ±90°, wissel, ∓90° → 0°) op één plat element, perspectief van de ouder; geen `preserve-3d` of `backface-visibility`, omdat WebKit dan `backdrop-filter` laat vallen |
+| 2026-11-17 | *(Claude)* De kaart volgt de vinger tijdens het vegen (halve kaartbreedte = 90°); loslaten na 30° of met een snelle veeg maakt de flip af, anders veert hij terug. Geen rondgaan: bij de eerste/laatste kaart lichte weerstand (max. 10°) |
+| 2026-11-17 | *(Claude)* Vegen dat begint op een bedieningselement (slider, knop, schakelaar, keuzemenu) hoort bij de kaart zelf, niet bij de swipe; verticaal vegen blijft scrollen |
+| 2026-11-17 | *(Claude)* Tikken op een puntje draait direct naar die kaart (richting volgens de positie); pijltjestoetsen op de puntjes werken ook |
+| 2026-11-17 | *(Claude)* Bij `prefers-reduced-motion: reduce` geen rotatie, alleen een korte overvloeier |
+| 2026-11-17 | *(Claude)* Alle kaarten liggen gestapeld in één rastercel: de swipe-kaart is zo hoog als de hoogste kaart en verandert nooit van grootte |
+| 2026-11-17 | *(Claude)* Swipe-kaart werkt in een eigen kaartthread op branch `claude/project-thread-8q9a8f` (afgetakt van het fundament); merge na akkoord op het fundament en de screenshots |

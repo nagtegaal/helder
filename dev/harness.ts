@@ -14,6 +14,30 @@ if (view === 'panel') {
   panel.narrow = params.has('narrow');
   panel.hass = (document.querySelector('home-assistant') as HTMLElement & { hass?: unknown }).hass;
   app.append(panel);
+} else if (view === 'swipe') {
+  // helder-swipe-card with demo cards as slides: a normal light, unavailable, unknown and a missing entity.
+  const widths = [152, 211, 360, 520];
+  const hass = (document.querySelector('home-assistant') as HTMLElement & { hass?: unknown }).hass;
+  const slides = ['light.vloerlamp', 'light.voordeur', 'light.tuin', 'light.bestaat_niet', 'light.garage'];
+  const start = Number(params.get('start') ?? 0);
+  app.innerHTML = `<h1>helder-swipe-card · ${mode === 'dark' ? 'donker' : 'licht'}</h1>`;
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  for (const w of widths) {
+    const fig = document.createElement('figure');
+    fig.style.width = `${w}px`;
+    const card = document.createElement('helder-swipe-card') as HTMLElement & { hass?: unknown; setConfig(c: unknown): void };
+    card.dataset.hass = '';
+    card.setConfig({ type: 'custom:helder-swipe-card', cards: slides.map((entity) => ({ type: 'custom:helder-demo-card', entity })) });
+    card.hass = hass;
+    fig.append(card);
+    const cap = document.createElement('figcaption');
+    cap.textContent = `${w} px · ${slides.length} kaarten`;
+    fig.append(cap);
+    grid.append(fig);
+    if (start) void (card as unknown as { updateComplete: Promise<unknown> }).updateComplete.then(() => Object.assign(card, { _index: start }));
+  }
+  app.append(grid);
 } else {
   const widths = [152, 211, 360, 520];
   const entities = ['light.vloerlamp', 'light.eettafel', 'light.garage', 'light.voordeur', 'light.tuin', 'light.bestaat_niet'];
