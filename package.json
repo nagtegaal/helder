@@ -18,7 +18,7 @@
     "lit": "3.3.3"
   },
   "devDependencies": {
-    "@fontsource-variable/open-sans": "5.3.0",
+    "@fontsource/hind": "5.3.0",
     "@types/node": "^22",
     "tsx": "4.23.15",
     "typescript": "7.0.2",

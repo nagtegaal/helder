@@ -20,8 +20,9 @@ Status: **in aanbouw** — het fundament (gesprek 0) wordt gebouwd. Open punten 
 ## 3. Ontwerp
 - **Stijl:** glas — doorschijnende kaarten met achtergrond-blur, lichte randen en diepte.
 - **Modi:** licht en donker, volgt de systeeminstelling van het apparaat (HA-theme met `modes: light` / `dark`).
-- **Font:** Open Sans (self-hosted variable woff2, Latin-subset, met OFL-licentie) in `/config/www/helder/fonts/`.
-  `helder.js` laadt het font zelf (`@font-face` in `document.head`); Helder hangt niet af van de bestaande
+- **Font:** Hind (zelfde font als het bronxx-theme; self-hosted woff2, Latin-subset, gewichten 300–700, OFL-licentie)
+  in `/config/www/helder/fonts/`. Kaarten gebruiken alleen 300 en 400; 500–700 zijn er voor HA's eigen pagina's.
+  `helder.js` laadt het font zelf (`@font-face` in `document.head`, familienaam `Helder Hind`); Helder hangt niet af van de bestaande
   `theme-font-loader.js` (die blijft voor de andere themes).
 - **Eenheden:** `rem` met 14 px als basis.
 - **Lettergroottes:** gelijk aan het bronxx-theme. Dat zet zelf geen groottes, dus = HA's eigen schaal
@@ -167,3 +168,4 @@ deploy/          deploy.sh (uitrol naar HA met backup) + configuration.yaml.snip
 | 2026-11-16 | *(Claude)* `helder-swipe-card` wordt gebouwd in een eigen kaartgesprek, niet in het fundament |
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |
 | 2026-11-23 | Lettergroottes gelijk aan bronxx-theme = HA's standaardschaal (10/12/14/16/20/24/28 px); `--helder-font-size-*` volgt `--ha-font-size-*` |
+| 2026-11-23 | Font Hind (zoals bronxx) i.p.v. Open Sans; static woff2 300–700 met OFL in `/config/www/helder/fonts/` |

@@ -12,7 +12,7 @@ importers:
         specifier: 3.3.3
         version: 3.3.3
     devDependencies:
-      '@fontsource-variable/open-sans':
+      '@fontsource/hind':
         specifier: 5.3.0
         version: 5.3.0
       '@types/node':
@@ -195,8 +195,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fontsource-variable/open-sans@5.3.0':
-    resolution: {integrity: sha512-VOfhZfLIOBVa6K/dTEu7scqQXYdGa4jBX8quFpQ0S6574B+W2EOBJf9PkqyVtMEI7WWIWNEbpvPc3vY1mN2mmQ==}
+  '@fontsource/hind@5.3.0':
+    resolution: {integrity: sha512-tN9N0AurZa2N8JakQw8Eqs5/1Rzpw7J6YA1mYpkkHZ3iTw1JjbSHq6V6hGjhRdZlUMHk1sN+jOhPmuF+RkRKEg==}
 
   '@lit-labs/ssr-dom-shim@1.6.0':
     resolution: {integrity: sha512-VHb0ALPMTlgKjM6yIxxoQNnpKyUKLD04VzeQdsiXkMqkvYlAHxq9glGLmgbb889/1GsohSOAjvQYoiBppXFqrQ==}
@@ -727,7 +727,7 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
-  '@fontsource-variable/open-sans@5.3.0': {}
+  '@fontsource/hind@5.3.0': {}
 
   '@lit-labs/ssr-dom-shim@1.6.0': {}
 

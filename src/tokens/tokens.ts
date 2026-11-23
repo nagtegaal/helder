@@ -85,7 +85,7 @@ const STATIC: Record<Mode, TokenMap> = {
 
 /** Mode-independent tokens. */
 const COMMON: TokenMap = {
-  'font-family': '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif',
+  'font-family': '"Helder Hind", "Hind", system-ui, -apple-system, "Segoe UI", sans-serif',
   'font-weight': '400',
   'font-weight-readout': '300',
   // Type scale = Home Assistant's own scale (what the bronxx theme uses: it sets no sizes of its own).

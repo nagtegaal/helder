@@ -5,7 +5,7 @@ helder:
   modes:
     light:
       helder-mode: light
-      helder-font-family: '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
+      helder-font-family: '"Helder Hind", "Hind", system-ui, -apple-system, "Segoe UI", sans-serif'
       helder-font-weight: '400'
       helder-font-weight-readout: '300'
       helder-font-size-xs: 'var(--ha-font-size-xs, 0.714rem)'
@@ -95,9 +95,9 @@ helder:
       ha-card-border-width: '1px'
       ha-card-border-color: 'rgba(255, 255, 255, 0.65)'
       ha-card-box-shadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 1px 0 0 rgba(255, 255, 255, 0.72), 0 0.7rem 2rem rgba(110, 70, 30, 0.13), 0 1px 3px rgba(110, 70, 30, 0.1)'
-      primary-font-family: '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
-      ha-font-family-body: '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
-      ha-font-family-heading: '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
+      primary-font-family: '"Helder Hind", "Hind", system-ui, -apple-system, "Segoe UI", sans-serif'
+      ha-font-family-body: '"Helder Hind", "Hind", system-ui, -apple-system, "Segoe UI", sans-serif'
+      ha-font-family-heading: '"Helder Hind", "Hind", system-ui, -apple-system, "Segoe UI", sans-serif'
       state-icon-color: '#7a6c60'
       state-light-on-color: '#e89a00'
       state-climate-heat-color: '#e8590c'
@@ -105,7 +105,7 @@ helder:
       error-color: '#c62828'
     dark:
       helder-mode: dark
-      helder-font-family: '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
+      helder-font-family: '"Helder Hind", "Hind", system-ui, -apple-system, "Segoe UI", sans-serif'
       helder-font-weight: '400'
       helder-font-weight-readout: '300'
       helder-font-size-xs: 'var(--ha-font-size-xs, 0.714rem)'
@@ -195,9 +195,9 @@ helder:
       ha-card-border-width: '1px'
       ha-card-border-color: 'rgba(255, 255, 255, 0.14)'
       ha-card-box-shadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 1px 0 0 rgba(255, 255, 255, 0.203), 0 0.8rem 2.4rem rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.35)'
-      primary-font-family: '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
-      ha-font-family-body: '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
-      ha-font-family-heading: '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
+      primary-font-family: '"Helder Hind", "Hind", system-ui, -apple-system, "Segoe UI", sans-serif'
+      ha-font-family-body: '"Helder Hind", "Hind", system-ui, -apple-system, "Segoe UI", sans-serif'
+      ha-font-family-heading: '"Helder Hind", "Hind", system-ui, -apple-system, "Segoe UI", sans-serif'
       state-icon-color: '#ab9d90'
       state-light-on-color: '#ffc23d'
       state-climate-heat-color: '#ff8a3d'

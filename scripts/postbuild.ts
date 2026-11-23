@@ -22,9 +22,11 @@ writeFileSync(
 );
 
 const require = createRequire(import.meta.url);
-const fontPkg = dirname(require.resolve('@fontsource-variable/open-sans/package.json'));
+const fontPkg = dirname(require.resolve('@fontsource/hind/package.json'));
 mkdirSync(join(dist, 'fonts'), { recursive: true });
-copyFileSync(join(fontPkg, 'files/open-sans-latin-wght-normal.woff2'), join(dist, 'fonts/open-sans-latin-wght-normal.woff2'));
+for (const w of [300, 400, 500, 600, 700]) {
+  copyFileSync(join(fontPkg, `files/hind-latin-${w}-normal.woff2`), join(dist, `fonts/hind-latin-${w}-normal.woff2`));
+}
 copyFileSync(join(fontPkg, 'LICENSE'), join(dist, 'fonts/OFL.txt'));
 
 writeFileSync(join(root, 'themes/helder.yaml'), themeYaml());
