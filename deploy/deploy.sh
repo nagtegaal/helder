@@ -33,7 +33,7 @@ cp "$SRC/themes/helder.yaml" "$CONFIG/themes/helder.yaml"
 cp "$SRC/dist/helder.js" "$WWW/helder.js"
 
 # keep the current bundle and the previous one (open tabs may still import it)
-CURRENT="$(sed -n "s|^import './\(helder\.[0-9a-f]*\.js\)';|\1|p" "$WWW/helder.js")"
+CURRENT="helder.$(awk '{print $2}' "$WWW/VERSION").js"
 ls -t "$WWW"/helder.*.js 2>/dev/null | grep -v "/$CURRENT$" | tail -n +2 | xargs -r rm -f || true
 
 echo "deployed Helder $(cat "$WWW/VERSION") to $WWW"

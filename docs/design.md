@@ -169,3 +169,4 @@ deploy/          deploy.sh (uitrol naar HA met backup) + configuration.yaml.snip
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |
 | 2026-11-23 | Lettergroottes gelijk aan bronxx-theme = HA's standaardschaal (10/12/14/16/20/24/28 px); `--helder-font-size-*` volgt `--ha-font-size-*` |
 | 2026-11-23 | Font Hind (zoals bronxx) i.p.v. Open Sans; static woff2 300–700 met OFL in `/config/www/helder/fonts/` |
+| 2026-11-23 | *(Claude)* `helder.js` leest het actuele bundle-hash uit `VERSION` (no-store), zodat een gecachte loader nooit een oude bundle laadt |
