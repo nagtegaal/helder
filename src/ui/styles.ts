@@ -120,7 +120,7 @@ export const cardStyles = css`
   }
   .value {
     grid-area: value;
-    font-size: 1.15rem;
+    font-size: var(--helder-font-size-l);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -130,7 +130,7 @@ export const cardStyles = css`
     margin-left: 0.1rem;
   }
   .readout {
-    font-size: 2.2rem;
+    font-size: var(--helder-font-size-3xl);
     font-weight: var(--helder-font-weight-readout);
     line-height: 1;
     font-variant-numeric: tabular-nums;

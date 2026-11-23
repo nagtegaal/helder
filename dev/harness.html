@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Helder harness</title>
     <style>
+      /* Mirror Home Assistant's root typography (typography.globals.ts) so sizes match the real frontend. */
+      html {
+        font-size: 14px;
+        --ha-font-size-scale: 1;
+        --ha-font-size-xs: calc(10px * var(--ha-font-size-scale));
+        --ha-font-size-s: calc(12px * var(--ha-font-size-scale));
+        --ha-font-size-m: calc(14px * var(--ha-font-size-scale));
+        --ha-font-size-l: calc(16px * var(--ha-font-size-scale));
+        --ha-font-size-xl: calc(20px * var(--ha-font-size-scale));
+        --ha-font-size-2xl: calc(24px * var(--ha-font-size-scale));
+        --ha-font-size-3xl: calc(28px * var(--ha-font-size-scale));
+      }
       body {
         margin: 0;
         min-height: 100vh;

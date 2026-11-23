@@ -88,11 +88,15 @@ const COMMON: TokenMap = {
   'font-family': '"Helder Open Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif',
   'font-weight': '400',
   'font-weight-readout': '300',
-  'font-size-xs': '0.75rem',
-  'font-size-s': '0.857rem',
-  'font-size-m': '1rem',
-  'font-size-l': '1.25rem',
-  'font-size-xl': '1.75rem',
+  // Type scale = Home Assistant's own scale (what the bronxx theme uses: it sets no sizes of its own).
+  // Follows HA's --ha-font-size-scale; the fallback is the same size in rem (14 px base).
+  'font-size-xs': 'var(--ha-font-size-xs, 0.714rem)', // 10 px
+  'font-size-s': 'var(--ha-font-size-s, 0.857rem)', // 12 px
+  'font-size-m': 'var(--ha-font-size-m, 1rem)', // 14 px
+  'font-size-l': 'var(--ha-font-size-l, 1.143rem)', // 16 px
+  'font-size-xl': 'var(--ha-font-size-xl, 1.429rem)', // 20 px
+  'font-size-2xl': 'var(--ha-font-size-2xl, 1.714rem)', // 24 px
+  'font-size-3xl': 'var(--ha-font-size-3xl, 2rem)', // 28 px
   space: '1rem',
   'space-s': '0.6rem',
   'space-xs': '0.35rem',

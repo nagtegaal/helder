@@ -218,11 +218,13 @@ var h = (e, t = 3) => {
 	"font-family": "\"Helder Open Sans\", \"Open Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
 	"font-weight": "400",
 	"font-weight-readout": "300",
-	"font-size-xs": "0.75rem",
-	"font-size-s": "0.857rem",
-	"font-size-m": "1rem",
-	"font-size-l": "1.25rem",
-	"font-size-xl": "1.75rem",
+	"font-size-xs": "var(--ha-font-size-xs, 0.714rem)",
+	"font-size-s": "var(--ha-font-size-s, 0.857rem)",
+	"font-size-m": "var(--ha-font-size-m, 1rem)",
+	"font-size-l": "var(--ha-font-size-l, 1.143rem)",
+	"font-size-xl": "var(--ha-font-size-xl, 1.429rem)",
+	"font-size-2xl": "var(--ha-font-size-2xl, 1.714rem)",
+	"font-size-3xl": "var(--ha-font-size-3xl, 2rem)",
 	space: "1rem",
 	"space-s": "0.6rem",
 	"space-xs": "0.35rem",
@@ -1076,7 +1078,7 @@ var Pt = P`
   }
   .value {
     grid-area: value;
-    font-size: 1.15rem;
+    font-size: var(--helder-font-size-l);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -1086,7 +1088,7 @@ var Pt = P`
     margin-left: 0.1rem;
   }
   .readout {
-    font-size: 2.2rem;
+    font-size: var(--helder-font-size-3xl);
     font-weight: var(--helder-font-weight-readout);
     line-height: 1;
     font-variant-numeric: tabular-nums;

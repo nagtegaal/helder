@@ -24,6 +24,10 @@ Status: **in aanbouw** — het fundament (gesprek 0) wordt gebouwd. Open punten 
   `helder.js` laadt het font zelf (`@font-face` in `document.head`); Helder hangt niet af van de bestaande
   `theme-font-loader.js` (die blijft voor de andere themes).
 - **Eenheden:** `rem` met 14 px als basis.
+- **Lettergroottes:** gelijk aan het bronxx-theme. Dat zet zelf geen groottes, dus = HA's eigen schaal
+  (`--ha-font-size-*`): xs 10, s 12, m 14, l 16, xl 20, 2xl 24, 3xl 28 px. `--helder-font-size-*` verwijst naar
+  die HA-variabelen (volgt `--ha-font-size-scale`), met dezelfde maat in rem als fallback. Kaart: naam m, secundair s,
+  waarde l, grote uitlezing 3xl.
 - **Apparaten:** iPhone, iPad, Mac (Safari) en desktop.
 - **Achtergrond:** een aantal subtiele cirkelvormige radiale verlopen die overlopen in de paginakleur; in licht een
   warme lichte basiskleur, in donker een warme donkere basis.
@@ -162,3 +166,4 @@ deploy/          deploy.sh (uitrol naar HA met backup) + configuration.yaml.snip
 | 2026-11-16 | *(Claude)* `deploy.sh` wijzigt `configuration.yaml` nooit; het controleert en toont de benodigde regels |
 | 2026-11-16 | *(Claude)* `helder-swipe-card` wordt gebouwd in een eigen kaartgesprek, niet in het fundament |
 | 2026-11-15 | Fundamentwerk in deze thread op branch `claude/project-thread-ganvgt`; merge naar `main` na akkoord |
+| 2026-11-23 | Lettergroottes gelijk aan bronxx-theme = HA's standaardschaal (10/12/14/16/20/24/28 px); `--helder-font-size-*` volgt `--ha-font-size-*` |
